@@ -1,2 +1,2 @@
 # csc365Project
-CSC365 Library Database 
+Library Database with JDBC, java backend with Web App UI. 
