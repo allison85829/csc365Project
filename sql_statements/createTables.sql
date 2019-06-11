@@ -18,7 +18,7 @@ CREATE TABLE CheckoutHistories (
 	book_id INT(10) NOT NULL,
 	student_id INT(10) NOT NULL,
 	checkout_date DATE NOT NULL,
-	due_date DATE NOT NULL,
+	due_date DATE,
 	return_date DATE NOT NULL,
 	times_renewed  INT(10) NOT NULL,
 
