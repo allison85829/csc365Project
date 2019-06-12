@@ -17,16 +17,16 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 	}
 
 	public CheckoutHistory getById(int entry_id) {
-		CheckoutHistory reservation = null;
+		CheckoutHistory checkout_hist = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 
 		try {
-			preparedStatement = this.conn.prepareStatement("SELECT * FROM CheckoutHistories WHERE reservation_id=?");
+			preparedStatement = this.conn.prepareStatement("SELECT * FROM CheckoutHistories WHERE entry_id=?");
 			preparedStatement.setInt(1, entry_id);
 			resultSet = preparedStatement.executeQuery();
-			Set<CheckoutHistory> reservations = unpackResultSet(resultSet);
-			reservation = (CheckoutHistory)reservations.toArray()[0];
+			Set<CheckoutHistory> checkout_hists = unpackResultSet(resultSet);
+			checkout_hist = (CheckoutHistory)checkout_hists.toArray()[0];
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -41,7 +41,7 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 				e.printStackTrace();
 			}
 		}
-		return reservation;
+		return checkout_hist;
 	}
 
 	public Set<CheckoutHistory> getAll() {
@@ -72,7 +72,33 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 	}
 
 	public Boolean insert(CheckoutHistory obj) {
-		return true;
+		Boolean successful = false;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try {
+			preparedStatement = this.conn.prepareStatement(
+					"INSERT INTO CheckoutHistories (book_id, student_id, checkout_date,  due_date," +
+					"return_date, times_renewed) VALUES (?, ?, ?, ?, ?, ?)");
+
+			preparedStatement.setInt(1, obj.getBookId());
+			preparedStatement.setInt(2, obj.getStudentId());
+			preparedStatement.setString(3, obj.getCheckoutDate());
+			preparedStatement.setString(4, obj.getDueDate());
+			preparedStatement.setString(5, obj.getReturnDate());
+			preparedStatement.setInt(6, obj.getTimesRenewed());
+		
+			successful = preparedStatement.execute();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return successful;
 	}
 
 	public Boolean update(CheckoutHistory obj) {
