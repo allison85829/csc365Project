@@ -40,3 +40,6 @@ INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, ret
 -- Reservations
 INSERT INTO Reservations (book_id, student_id, date) values (3, 8, "2019-06-05");
 INSERT INTO Reservations (book_id, student_id, date) values (3, 1, "2019-06-09");
+
+-- Making sure counts are correct based off of insert data
+UPDATE Students SET books_checked_out = 3 WHERE student_id = 4;
