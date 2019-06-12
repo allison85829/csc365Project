@@ -4,8 +4,8 @@
 
 <entry key="driver">com.mysql.cj.jdbc.Driver</entry>
 <entry key="url">jdbc:mysql://csc365.toshikuboi.net:3306/sec03group06</entry>
-<entry key="user"></entry>
-<entry key="pass"></entry>
+<entry key="user">aquelle</entry>
+<entry key="pass">011542787</entry>
 
 
 </properties>
