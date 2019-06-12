@@ -9,7 +9,7 @@ WHERE student_id = given_id
 ORDER BY due_date;
 
 -- Get previous checkout history of student given the ID
-SELECT book_id, title, author, checkout_date, due_date 
+SELECT Books.book_id, title, author, checkout_date, due_date, return_date
 FROM CheckoutHistories
 JOIN Books ON CheckoutHistories.book_id = Books.book_id
 WHERE student_id = given_id
@@ -17,18 +17,23 @@ WHERE student_id = given_id
 ORDER BY due_date;
 
 -- Renew a book (assuming checking if they can renew will be handled in java) based on book_id
--- Note: Determine new due date in java, grad students get 14 days added, undergrad get 7
---       Can't do that in the SQL right now because the DATEADD function is not on the server
+--   For grad students, add 14 days
 UPDATE CheckoutHistories
-SET due_date = new_date,
+SET due_date = DATE_ADD(due_date, INTERVAL 14 DAY),
     times_renewed = times_renewed + 1
-WHERE book_id = given_id
+WHERE book_id = 3
+    AND return_date IS NULL;
+
+--   For undergrad students, add 7 days
+UPDATE CheckoutHistories
+SET due_date = DATE_ADD(due_date, INTERVAL 7 DAY),
+    times_renewed = times_renewed + 1
+WHERE book_id = 3
     AND return_date IS NULL;
 
 -- Return a book based on book_id
--- Note: Current date also has to be determined in java
 UPDATE CheckoutHistories
-SET return_date = given_date
+SET return_date = CURDATE()
 WHERE book_id = given_id
     AND return_date IS NULL;
 

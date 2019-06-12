@@ -4,12 +4,16 @@ CREATE TABLE Books (
 	author VARCHAR(50) NOT NULL,
 	category VARCHAR(50) NOT NULL,
 	availability TINYINT(1) NOT NULL,
+	
 	PRIMARY KEY(book_id)
 );
 
 CREATE TABLE Students (
 	student_id INT(10) AUTO_INCREMENT,
 	grad_level INT(10) NOT NULL,
+	books_checked_out INT(1) NOT NULL DEFAULT 0,
+
+	FOREIGN KEY (grad_level) REFERENCES Levels(level_id),
 	PRIMARY KEY(student_id)
 );
 
