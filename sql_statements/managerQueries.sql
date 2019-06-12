@@ -1,7 +1,8 @@
 -- Library Manager View Queries
 
 -- Find all books checked out in a specified year
-SELECT DISTINCT title FROM Books, CheckoutHistories
+SELECT DISTINCT title FROM CheckoutHistories
+JOIN Books ON CheckoutHistories.book_id = Books.book_id
 WHERE YEAR(checkout_date) = 2019;
 
 SELECT DISTINCT book_id FROM CheckoutHistories

@@ -16,23 +16,24 @@ INSERT INTO Levels (level_name, book_limit, checkout_duration, renew_limit) VALU
 INSERT INTO Levels (level_name, book_limit, checkout_duration, renew_limit) VALUES ("Graduate", 5, 14, 2);
 
 -- Students
+INSERT INTO Students (grad_level) VALUES (2);
+INSERT INTO Students (grad_level) VALUES (2);
+INSERT INTO Students (grad_level) VALUES (2);
+INSERT INTO Students (grad_level) VALUES (2);
+INSERT INTO Students (grad_level) VALUES (2);
+INSERT INTO Students (grad_level) VALUES (2);
 INSERT INTO Students (grad_level) VALUES (1);
 INSERT INTO Students (grad_level) VALUES (1);
 INSERT INTO Students (grad_level) VALUES (1);
 INSERT INTO Students (grad_level) VALUES (1);
 INSERT INTO Students (grad_level) VALUES (1);
 INSERT INTO Students (grad_level) VALUES (1);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
-INSERT INTO Students (grad_level) VALUES (0);
+INSERT INTO Students (grad_level) VALUES (1);
+INSERT INTO Students (grad_level) VALUES (1);
 
 -- Checkout history
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (1, 4, "2019-05-10", "2019-05-24", "2019-05-20", 0);
+INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (2, 2, "2019-01-10", "2019-01-24", "2019-01-20", 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (3, 4, "2019-06-01", "2019-06-15", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (5, 4, "2019-05-20", "2019-06-04", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (7, 4, "2019-06-01", "2019-06-15", NULL, 0);
