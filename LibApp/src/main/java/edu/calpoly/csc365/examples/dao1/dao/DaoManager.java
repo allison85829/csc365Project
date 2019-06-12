@@ -2,6 +2,10 @@ package edu.calpoly.csc365.examples.dao1.dao;
 
 import edu.calpoly.csc365.examples.dao1.entity.Customer;
 import edu.calpoly.csc365.examples.dao1.entity.Book;
+import edu.calpoly.csc365.examples.dao1.entity.Student;
+import edu.calpoly.csc365.examples.dao1.entity.CheckoutHistory;
+import edu.calpoly.csc365.examples.dao1.entity.Reservation;
+import edu.calpoly.csc365.examples.dao1.entity.Level;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -111,7 +115,23 @@ public class DaoManager {
   public Dao<Book> getBookDao() {
     return new BookDaoImpl(this.conn);
   }  
+  
+  public Dao<Student> getStudentDao() {
+	  return new StudentDaoImpl(this.conn);
+  }  
+  
+  public Dao<CheckoutHistory> getCheckoutHistoryDao() {
+	  return new CheckoutHistoryDaoImpl(this.conn);
+  }
 
+  public Dao<Reservation> getReservationDao() {
+	  return new ReservationDaoImpl(this.conn);
+  }
+  
+  public Dao<Level> getLevelDao() {
+	  return new LevelDaoImpl(this.conn);
+  }
+  
   public CachedDao<Customer> getCustomerCachedDao() {
     return new CustomerCachedDaoImpl(this.conn);
   }
