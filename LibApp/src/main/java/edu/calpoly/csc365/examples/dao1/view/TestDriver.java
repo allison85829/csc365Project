@@ -18,23 +18,21 @@ import edu.calpoly.csc365.examples.dao1.entity.Student;
 
 public class TestDriver {
 	public static int cur_student_id;
+	public static DaoManager dm = null;
+	public static Dao<Book> bookDao = null;
+	public static Dao<Student> studentDao = null;
+	public static Dao<Level> levelDao = null;
+	public static Dao<CheckoutHistory> checkoutDao = null;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int book_id;
-		DaoManager dm = null;
-		Dao<Book> bookDao = null;
-		Dao<Student> studentDao = null;
-		Dao<Level> levelDao = null;
-		Dao<CheckoutHistory> checkoutDao = null;
+
 		Book book = null;
 		cur_student_id = 1;
-		int num_checkout_entr = 9;
-		int times_renewed = 0;
-
-		
+	
 		try {
-			dm = DaoManager.getInstance().setProperties("properties.xml");
+			dm = DaoManager.getInstance().setProperties("/Users/allyquan/cs/CSC365/properties.xml");
 			bookDao = dm.getBookDao();
 			studentDao = dm.getStudentDao();
 			levelDao = dm.getLevelDao();
@@ -72,32 +70,7 @@ public class TestDriver {
 			book = bookDao.getById(book_id);
 			System.out.println(book);
 			
-			// ------------ create checkout history ----------------- 
-			// get the current student grad level 
-			Student cur_student = studentDao.getById(cur_student_id);
-			// get restriction on the student
-			Level cur_student_level = levelDao.getById(cur_student.getGradLevel());
-			
-			// setting up the date format 
-			String pattern = "yyyy-MM-dd";
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-			Calendar c = Calendar.getInstance();
-			Date cur_date = new Date();
-			String cur_date_str = simpleDateFormat.format(cur_date); 
-			
-			//Setting the date to the given date
-			c.setTime(cur_date);
-			// add checkout duration to get the due date
-			c.add(Calendar.DAY_OF_MONTH, cur_student_level.getTimeLimit());
-			String due_date = simpleDateFormat.format(c.getTime());  
-			
-			num_checkout_entr++;
-			CheckoutHistory checkout_hist = new CheckoutHistory(
-					null, book_id, cur_student_id, 0, cur_date_str, null, due_date);
-			checkoutDao.insert(checkout_hist);
-			
-			System.out.println("student level " + cur_student_level);
-			System.out.println("inserted hist " + checkout_hist);
+			createCheckoutHisotry(book_id, cur_student_id);
 			
 			// closing the connection
 			try {
@@ -107,5 +80,33 @@ public class TestDriver {
 				e.printStackTrace();
 			}
 		} 
+	}
+	
+	public static void createCheckoutHisotry(int book_id, int student_id) {
+		// ------------ create checkout history ----------------- 
+		// get the current student grad level 
+		Student cur_student = studentDao.getById(student_id);
+		// get restriction on the student
+		Level cur_student_level = levelDao.getById(cur_student.getGradLevel());
+
+		// setting up the date format 
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		Calendar c = Calendar.getInstance();
+		Date cur_date = new Date();
+		String cur_date_str = simpleDateFormat.format(cur_date); 
+
+		//Setting the date to the given date
+		c.setTime(cur_date);
+		// add checkout duration to get the due date
+		c.add(Calendar.DAY_OF_MONTH, cur_student_level.getTimeLimit());
+		String due_date = simpleDateFormat.format(c.getTime());  
+
+		CheckoutHistory checkout_hist = new CheckoutHistory(
+				null, book_id, cur_student_id, 0, cur_date_str, null, due_date);
+		checkoutDao.insert(checkout_hist);
+
+		System.out.println("student level " + cur_student_level);
+		System.out.println("inserted hist " + checkout_hist);
 	}
 }

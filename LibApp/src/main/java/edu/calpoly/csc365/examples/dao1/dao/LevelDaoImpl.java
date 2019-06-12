@@ -83,7 +83,7 @@ public class LevelDaoImpl implements Dao<Level> {
 		try {
 			preparedStatement = this.conn.prepareStatement(
 					"UPDATE Levels SET level_name=?, book_limit=?, "
-					+ "time_limit=?, renew_limit=? WHERE level_id=?");
+					+ "checkout_duration=?, renew_limit=? WHERE level_id=?");
 			preparedStatement.setString(1, obj.getLevelName());
 			preparedStatement.setInt(2, obj.getBookLimit());
 			preparedStatement.setInt(3, obj.getTimeLimit());
@@ -133,7 +133,7 @@ public class LevelDaoImpl implements Dao<Level> {
 					rs.getInt("level_id"),
 					rs.getString("level_name"),
 					rs.getInt("book_limit"),
-					rs.getInt("time_limit"),
+					rs.getInt("checkout_duration"),
 					rs.getInt("renew_limit"));
 			levels.add(level);
 		}
