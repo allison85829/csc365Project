@@ -1,5 +1,6 @@
 Group members: Ally Quan, Sherry Lin, Abigail Ibarrola, Alexandria Quelle
 Group: section 3 group 6
+Github: https://github.com/allison85829/csc365Project
 
 1. Signing in
     (id) Type a student id to see a student's interface
