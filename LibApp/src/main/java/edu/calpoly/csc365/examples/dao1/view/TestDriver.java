@@ -90,7 +90,7 @@ public class TestDriver {
 		else {
 			displayCheckedOutBooks();
 			displayReservedBooks();
-			//displayOverdueBooks();
+			displayOverdueBooks();
 
 			while (!input.equals("q")) {
 				displayStudentMenu();
@@ -177,13 +177,27 @@ public class TestDriver {
 		}
 	}
 
-	public static void displayAllOverdueBooks() throws  SQLException {
-		ResultSet rs = getAllOverdueBooks();
+	public static void displayOverdueBooks() throws  SQLException {
+		ResultSet rs = getOverdueBooks(cur_student_id);
 
 		if (rs.next() != false) {
 			System.out.println("\nWarning! The following books are overdue:");
 			rs.previous();
 			printOutput(rs);
+		}
+	}
+
+	public static void displayAllOverdueBooks() throws  SQLException {
+		ResultSet rs = getAllOverdueBooks();
+
+		if (rs.next() != false) {
+			System.out.println("\nThe following students currently have overdue books:");
+			rs.previous();
+			printOutput(rs);
+		}
+
+		else {
+			System.out.println("\nThere are currently no books overdue.");
 		}
 	}
 
@@ -441,6 +455,28 @@ public class TestDriver {
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
 					"SELECT title FROM Books WHERE availability = 0");
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getOverdueBooks(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Books.book_id, title FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"JOIN Students ON CheckoutHistories.student_id = Students.student_id\n" +
+							"WHERE return_date IS NULL AND CURDATE() > due_date AND Students.student_id = ?\n" +
+							"ORDER BY title, Books.book_id");
+			preparedStatement.setInt(1, student_id);
 			resultSet = preparedStatement.executeQuery();
 
 		}
