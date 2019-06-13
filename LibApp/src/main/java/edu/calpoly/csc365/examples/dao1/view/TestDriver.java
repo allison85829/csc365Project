@@ -263,7 +263,7 @@ public class TestDriver {
 	public static void viewHistory(Scanner in) throws SQLException{
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
 		if (rs.next() == false) {
-			System.out.println("no check history");
+			System.out.println("no previous checkout history");
 		}
 		else {
 			printOutput(rs);
@@ -272,7 +272,7 @@ public class TestDriver {
 	}
 
 	public static void viewMonthlyOverview(Scanner in){
-		// Put code in here
+		printOutput(getCheckoutSummary());
 	}
 
 	public static void createCheckoutHisotry(Book book, int student_id) {
