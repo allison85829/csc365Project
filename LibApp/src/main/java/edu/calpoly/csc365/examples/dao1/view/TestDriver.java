@@ -75,8 +75,8 @@ public class TestDriver {
 
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
+			displayAllCheckedOutBooks();
 			displayOverdueBooks();
-			displayCheckedOutBooks();
 
 			while (!input.equals("q")) {
 				displayManagerMenu();
@@ -131,6 +131,21 @@ public class TestDriver {
 		System.out.println("\nMenu Options");
 		System.out.println("    v: View Monthly Checkout Overview");
 		System.out.println("    q: Quit Library Checkout System");
+	}
+
+	public static void displayAllCheckedOutBooks() throws  SQLException{
+
+		ResultSet rs = getAllCheckedOutBooks(cur_student_id);
+
+		System.out.println("\nAll Currently Checked Out Books:");
+
+		if (rs.next() == false) {
+			System.out.println("There no books currently checked out!");
+		}
+		else {
+			rs.previous();
+			printOutput(rs);
+		}
 	}
 
 	public static void displayCheckedOutBooks() throws  SQLException{
@@ -576,6 +591,28 @@ public class TestDriver {
 							"ORDER BY due_date");
 
 			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getAllCheckedOutBooks(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Students.student_id, Books.book_id, title, author, checkout_date, due_date\n" +
+							"FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"JOIN Students ON CheckoutHistories.student_id = Students.student_id\n" +
+							"ORDER BY Students.student_id");
+
 			resultSet = preparedStatement.executeQuery();
 
 		}
