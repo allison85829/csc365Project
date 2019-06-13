@@ -41,7 +41,7 @@ public class TestDriver {
 		// TODO Auto-generated method stub
 		cur_student_id = 1;	
 		try {
-			dm = DaoManager.getInstance().setProperties("/Users/allyquan/cs/CSC365/properties.xml");
+			dm = DaoManager.getInstance().setProperties("properties.xml");
 			conn = DaoManager.getConnection();
 			bookDao = dm.getBookDao();
 			studentDao = dm.getStudentDao();
@@ -167,36 +167,35 @@ public class TestDriver {
 	}
 
 	public static void searchForBook(Scanner sc){
-		// Put code in here
-		int book_id;
-		Book book = null;
-
+		System.out.println("Search book by title (t), author (a), or category (c)");
 		sc.nextLine();
-		System.out.println("Enter option (c for checkout or r for reserve): ");
-		String opt = sc.nextLine();
-		System.out.println("Enter the book id: ");
-		book_id = sc.nextInt();
+		String option = sc.nextLine();
 
-		if (opt.equals("c")) {
-			// update availability
-			book = bookDao.getById(book_id);
-			book.setAvailability(false);
-			bookDao.update(book);
+		if (option.equals("t")) {
 
-			book = bookDao.getById(book_id);			
-			createCheckoutHisotry(book_id, cur_student_id);
+			System.out.println("Enter book title");
+			String title = sc.nextLine();
 
-			// closing the connection
-			try {
-				dm.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else if (opt.equals("r")) {
-			// insert into reservation table 
-
+			printOutput(getBookByTitle(title));
 		}
+		else if (option.equals("a")) {
+
+			System.out.println("Enter author name");
+			String author = sc.nextLine();
+
+			printOutput(getBookByAuthor(author));
+		}
+		else if (option.equals("c")) {
+
+			System.out.println("Enter category");
+			String category = sc.nextLine();
+
+			printOutput(getBookByCategory(category));
+		}
+		else {
+			System.exit(0);
+		}
+
 	}
 
 	public static void returnBook(Scanner in){
