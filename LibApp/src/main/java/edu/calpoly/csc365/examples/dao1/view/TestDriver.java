@@ -42,9 +42,11 @@ public class TestDriver {
 	public static String pattern = "yyyy-MM-dd";
 	public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		cur_student_id = 1;	
+		cur_student_id = 1;
+
+
 		try {
 			dm = DaoManager.getInstance().setProperties("properties.xml");
 			conn = DaoManager.getConnection();
@@ -63,7 +65,7 @@ public class TestDriver {
 		userInputDriver();
 	}
 
-	public static void userInputDriver(){
+	public static void userInputDriver() throws SQLException{
 		String input = "";
 
 		displayWelcomeMessage();
@@ -127,15 +129,26 @@ public class TestDriver {
 		System.out.println("    q: Quit Library Checkout System");
 	}
 
-	public static void displayCheckedOutBooks(){
-		// Put code in here
+	public static void displayCheckedOutBooks() throws  SQLException{
+
+		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
+
+		System.out.println("Currently checkout books");
+		System.out.println();
+
+		if (rs.next() == false) {
+			System.out.println("no books currently checked out");
+		}
+		else {
+			printOutput(rs);
+		}
 	}
 
 	public static void displayReservedBooks(){
 		// Put code in here
 	}
 
-	public static void executeStudentCommand(String input, Scanner in) {
+	public static void executeStudentCommand(String input, Scanner in) throws SQLException{
 		switch(input)
 		{
 			case "s":
@@ -151,6 +164,7 @@ public class TestDriver {
 				viewHistory(in);
 				break;
 			case "q":
+				dm.close();
 				break;
 			default:
 				System.out.println("Invalid input. Please try again.");
@@ -219,23 +233,10 @@ public class TestDriver {
 			book.setAvailability(false);
 			bookDao.update(book);
 
-<<<<<<< HEAD
-//			book = bookDao.getById(book_id);			
 			createCheckoutHisotry(book, cur_student_id);
-=======
-			book = bookDao.getById(book_id);
-			createCheckoutHisotry(book_id, cur_student_id);
->>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
 
-			// closing the connection
-			try {
-				dm.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 		} else if (opt.equals("r")) {
-<<<<<<< HEAD
 			// insert into reservation table 
 			if (studentHasReservation(cur_student_id)) {
 				System.out.println("You has reached the reservation limit \n"
@@ -244,13 +245,9 @@ public class TestDriver {
 				// check for max number of book checkout 
 				reserveBook(cur_student, book);
 			}
-=======
-			// insert into reservation table
-
->>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
 		}
 
-		
+
 
 
 	}
@@ -263,8 +260,15 @@ public class TestDriver {
 		// Put code in here
 	}
 
-	public static void viewHistory(Scanner in){
-		// Put code in here
+	public static void viewHistory(Scanner in) throws SQLException{
+		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
+		if (rs.next() == false) {
+			System.out.println("no check history");
+		}
+		else {
+			printOutput(rs);
+		}
+
 	}
 
 	public static void viewMonthlyOverview(Scanner in){
