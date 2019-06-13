@@ -10,7 +10,7 @@ import java.util.Set;
 import edu.calpoly.csc365.examples.dao1.entity.CheckoutHistory;
 
 public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
-	private Connection conn;
+	public static Connection conn;
 
 	public CheckoutHistoryDaoImpl(Connection conn) {
 		this.conn = conn;
