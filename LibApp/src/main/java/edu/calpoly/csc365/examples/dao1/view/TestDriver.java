@@ -307,6 +307,7 @@ public class TestDriver {
 		ResultSet rs;
 		String s;
 		Boolean b;
+		Boolean empty = false;
 
 		if (option.equals("t")) {
 
@@ -316,23 +317,28 @@ public class TestDriver {
 			System.out.println("\nSearch Results:");
 			rs = getBookByTitle(title);
 
-			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+			if (rs.next() == false) {
+				empty = true;
+				System.out.println("No search results");
+			}
+			else {
+				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
-			while (rs.next()) {
-				s = rs.getString(2);
-				if (s.length() > 50) {
-					s = s.substring(0, 50);
-				}
+				while (rs.next()) {
+					s = rs.getString(2);
+					if (s.length() > 50) {
+						s = s.substring(0, 50);
+					}
 
-				if (rs.getInt(5) == 0) {
-					b = false;
-				}
-				else {
-					b = true;
-				}
+					if (rs.getInt(5) == 0) {
+						b = false;
+					} else {
+						b = true;
+					}
 
-				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
-						rs.getString(3), rs.getString(4), b);
+					System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+							rs.getString(3), rs.getString(4), b);
+				}
 			}
 		}
 		else if (option.equals("a")) {
@@ -343,23 +349,28 @@ public class TestDriver {
 			System.out.println("\nSearch Results:");
 			rs = getBookByAuthor(author);
 
-			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+			if (rs.next() == false) {
+				empty = true;
+				System.out.println("No search results");
+			}
+			else {
+				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
-			while (rs.next()) {
-				s = rs.getString(2);
-				if (s.length() > 50) {
-					s = s.substring(0, 50);
-				}
+				while (rs.next()) {
+					s = rs.getString(2);
+					if (s.length() > 50) {
+						s = s.substring(0, 50);
+					}
 
-				if (rs.getInt(5) == 0) {
-					b = false;
-				}
-				else {
-					b = true;
-				}
+					if (rs.getInt(5) == 0) {
+						b = false;
+					} else {
+						b = true;
+					}
 
-				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
-						rs.getString(3), rs.getString(4), b);
+					System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+							rs.getString(3), rs.getString(4), b);
+				}
 			}
 		}
 		else if (option.equals("c")) {
@@ -370,23 +381,28 @@ public class TestDriver {
 			System.out.println("\nSearch Results:");
 			rs = getBookByCategory(category);
 
-			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+			if (rs.next() == false) {
+				empty = true;
+				System.out.println("No search results");
+			}
+			else {
+				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
-			while (rs.next()) {
-				s = rs.getString(2);
-				if (s.length() > 50) {
-					s = s.substring(0, 50);
-				}
+				while (rs.next()) {
+					s = rs.getString(2);
+					if (s.length() > 50) {
+						s = s.substring(0, 50);
+					}
 
-				if (rs.getInt(5) == 0) {
-					b = false;
-				}
-				else {
-					b = true;
-				}
+					if (rs.getInt(5) == 0) {
+						b = false;
+					} else {
+						b = true;
+					}
 
-				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
-						rs.getString(3), rs.getString(4), b);
+					System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+							rs.getString(3), rs.getString(4), b);
+				}
 			}
 		}
 		else {
@@ -397,27 +413,29 @@ public class TestDriver {
 		int book_id;
 		Book book = null;
 
-		System.out.println("\nEnter option (c for checkout or r for reserve): ");
-		String opt = sc.nextLine();
-		System.out.println("Enter book id to checkout/reserve: ");
-		book_id = sc.nextInt();
-		book = bookDao.getById(book_id);
-		Student cur_student = studentDao.getById(cur_student_id);
-		
-		
-		if (opt.equals("c")) {
-			// update availability
-			book.setAvailability(false);
-			bookDao.update(book);
-			createCheckoutHisotry(book, cur_student_id);
-		} else if (opt.equals("r")) {
-			// insert into reservation table 
-			if (studentHasReservation(cur_student_id)) {
-				System.out.println("You have reached the reservation limit! \n"
-						+ "Cannot reserve.");
-			} else {
-				// check for max number of book checkout 
-				reserveBook(cur_student, book);
+		if (empty == false) {
+			System.out.println("\nEnter option (c for checkout or r for reserve): ");
+			String opt = sc.nextLine();
+			System.out.println("Enter book id to checkout/reserve: ");
+			book_id = sc.nextInt();
+			book = bookDao.getById(book_id);
+			Student cur_student = studentDao.getById(cur_student_id);
+
+
+			if (opt.equals("c")) {
+				// update availability
+				book.setAvailability(false);
+				bookDao.update(book);
+				createCheckoutHisotry(book, cur_student_id);
+			} else if (opt.equals("r")) {
+				// insert into reservation table
+				if (studentHasReservation(cur_student_id)) {
+					System.out.println("You have reached the reservation limit! \n"
+							+ "Cannot reserve.");
+				} else {
+					// check for max number of book checkout
+					reserveBook(cur_student, book);
+				}
 			}
 		}
 	}
