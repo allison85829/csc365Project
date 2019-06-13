@@ -310,8 +310,39 @@ public class TestDriver {
 	}
 
 	public static void renewBook(Scanner in){
-		// Put code in here
+		System.out.println("Enter book id");
+		int book_id = in.nextInt();
+		in.nextLine();
+
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"UPDATE CheckoutHistories\n" +
+							"SET due_date = DATE_ADD(due_date, INTERVAL \n" +
+							"(SELECT DISTINCT checkout_duration FROM Levels \n" +
+							"JOIN Students ON grad_level = level_id\n" +
+							"WHERE level_id = ?)\n" +
+							" DAY),\n" +
+							"    times_renewed = times_renewed + 1\n" +
+							"WHERE book_id = ?\n" +
+							"    AND return_date IS NULL;");
+
+			Student student = studentDao.getById(cur_student_id);
+			preparedStatement.setInt(1, student.getGradLevel());
+			preparedStatement.setInt(2, book_id);
+
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
+
+
 
 	public static void viewHistory(Scanner in) throws SQLException{
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
