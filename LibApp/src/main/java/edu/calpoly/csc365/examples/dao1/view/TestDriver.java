@@ -75,6 +75,9 @@ public class TestDriver {
 
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
+			displayOverdueBooks();
+			displayCheckedOutBooks();
+
 			while (!input.equals("q")) {
 				displayManagerMenu();
 				displayPrompt();
@@ -87,6 +90,7 @@ public class TestDriver {
 		else {
 			displayCheckedOutBooks();
 			displayReservedBooks();
+			displayOverdueBooks();
 
 			while (!input.equals("q")) {
 				displayStudentMenu();
@@ -144,7 +148,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void displayReservedBooks() throws  SQLException{
+	public static void displayReservedBooks() throws  SQLException {
 
 		ResultSet rs = getReservedBooksByStudentId(cur_student_id);
 
@@ -152,9 +156,24 @@ public class TestDriver {
 
 		if (rs.next() == false) {
 			System.out.println("You have no books currently reserved!");
+		} else {
+			rs.previous();
+			printOutput(rs);
+		}
+	}
+
+	public static void displayOverdueBooks() throws  SQLException {
+		ResultSet rs = getOverdueBooks();
+
+		System.out.println();
+		System.out.println("list of overdue books");
+		System.out.println();
+
+		if (rs.next() == false) {
+			System.out.println("no books overdue");
 		}
 		else {
-			rs.previous();
+
 			printOutput(rs);
 		}
 	}
@@ -274,7 +293,7 @@ public class TestDriver {
 	public static void viewHistory(Scanner in) throws SQLException{
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
 		if (rs.next() == false) {
-			System.out.println("no check history");
+			System.out.println("no previous checkout history");
 		}
 		else {
 			printOutput(rs);
@@ -283,7 +302,7 @@ public class TestDriver {
 	}
 
 	public static void viewMonthlyOverview(Scanner in){
-		// Put code in here
+		printOutput(getCheckoutSummary());
 	}
 
 	public static void createCheckoutHisotry(Book book, int student_id) {
@@ -431,7 +450,7 @@ public class TestDriver {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
 					"SELECT title FROM CheckoutHistories\n" +
 							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
-							"WHERE return_date IS NULL");
+							"WHERE return_date IS NULL AND CURDATE() > due_date");
 			resultSet = preparedStatement.executeQuery();
 
 		}
