@@ -8,7 +8,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;  
 import java.util.Date;  
 import java.util.Calendar;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.PreparedStatement;
 
+import edu.calpoly.csc365.examples.dao1.dao.CheckoutHistoryDaoImpl;
 import edu.calpoly.csc365.examples.dao1.dao.Dao;
 import edu.calpoly.csc365.examples.dao1.dao.DaoManager;
 import edu.calpoly.csc365.examples.dao1.entity.Book;
@@ -23,6 +27,42 @@ public class TestDriver {
 	public static Dao<Student> studentDao = null;
 	public static Dao<Level> levelDao = null;
 	public static Dao<CheckoutHistory> checkoutDao = null;
+
+	public static void printOutput(ResultSet rs) {
+		try {
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnsNumber = rsmd.getColumnCount();
+			while (rs.next()) {
+				for (int i = 1; i <= columnsNumber; i++) {
+					if (i > 1) System.out.print(",  ");
+					String columnValue = rs.getString(i);
+					System.out.print(columnValue + " " + rsmd.getColumnName(i));
+				}
+				System.out.println();
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static ResultSet getCheckoutBooks(Dao<CheckoutHistory> historyDao) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT title FROM Books WHERE availability = 0");
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
+		return resultSet;
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
