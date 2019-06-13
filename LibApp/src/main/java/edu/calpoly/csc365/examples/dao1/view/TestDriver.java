@@ -36,10 +36,17 @@ public class TestDriver {
 	public static Dao<Student> studentDao = null;
 	public static Dao<Level> levelDao = null;
 	public static Dao<CheckoutHistory> checkoutDao = null;
+	public static Dao<Reservation> reservationDao = null;
+	
+	// setting up the date format
+	public static String pattern = "yyyy-MM-dd";
+	public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		cur_student_id = 1;	
+		cur_student_id = 1;
+
+
 		try {
 			dm = DaoManager.getInstance().setProperties("properties.xml");
 			conn = DaoManager.getConnection();
@@ -47,6 +54,7 @@ public class TestDriver {
 			studentDao = dm.getStudentDao();
 			levelDao = dm.getLevelDao();
 			checkoutDao = dm.getCheckoutHistoryDao();
+			reservationDao = dm.getReservationDao();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,7 +65,7 @@ public class TestDriver {
 		userInputDriver();
 	}
 
-	public static void userInputDriver(){
+	public static void userInputDriver() throws SQLException{
 		String input = "";
 
 		displayWelcomeMessage();
@@ -120,15 +128,26 @@ public class TestDriver {
 		System.out.println("    q: Quit Library Checkout System");
 	}
 
-	public static void displayCheckedOutBooks(){
-		// Put code in here
+	public static void displayCheckedOutBooks() throws  SQLException{
+
+		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
+
+		System.out.println("Currently checkout books");
+		System.out.println();
+
+		if (rs.next() == false) {
+			System.out.println("no books currently checked out");
+		}
+		else {
+			printOutput(rs);
+		}
 	}
 
 	public static void displayReservedBooks(){
 		// Put code in here
 	}
 
-	public static void executeStudentCommand(String input, Scanner in) {
+	public static void executeStudentCommand(String input, Scanner in) throws SQLException{
 		switch(input)
 		{
 			case "s":
@@ -144,6 +163,7 @@ public class TestDriver {
 				viewHistory(in);
 				break;
 			case "q":
+				dm.close();
 				break;
 			default:
 				System.out.println("Invalid input. Please try again.");
@@ -195,6 +215,40 @@ public class TestDriver {
 			System.exit(0);
 		}
 
+
+		int book_id;
+		Book book = null;
+
+		System.out.println("Enter option (c for checkout or r for reserve): ");
+		String opt = sc.nextLine();
+		System.out.println("Enter the book id: ");
+		book_id = sc.nextInt();
+		book = bookDao.getById(book_id);
+		Student cur_student = studentDao.getById(cur_student_id);
+		
+		
+		if (opt.equals("c")) {
+			// update availability
+			book.setAvailability(false);
+			bookDao.update(book);
+
+			createCheckoutHisotry(book, cur_student_id);
+
+
+		} else if (opt.equals("r")) {
+			// insert into reservation table 
+			if (studentHasReservation(cur_student_id)) {
+				System.out.println("You has reached the reservation limit \n"
+						+ "Cannot reserve");
+			} else {
+				// check for max number of book checkout 
+				reserveBook(cur_student, book);
+			}
+		}
+
+
+
+
 	}
 
 	public static void returnBook(Scanner in){
@@ -205,15 +259,22 @@ public class TestDriver {
 		// Put code in here
 	}
 
-	public static void viewHistory(Scanner in){
-		// Put code in here
+	public static void viewHistory(Scanner in) throws SQLException{
+		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
+		if (rs.next() == false) {
+			System.out.println("no check history");
+		}
+		else {
+			printOutput(rs);
+		}
+
 	}
 
 	public static void viewMonthlyOverview(Scanner in){
 		// Put code in here
 	}
 
-	public static void createCheckoutHisotry(int book_id, int student_id) {
+	public static void createCheckoutHisotry(Book book, int student_id) {
 		// ------------ create checkout history -----------------
 		// get the current student grad level
 		Student cur_student = studentDao.getById(student_id);
@@ -221,8 +282,6 @@ public class TestDriver {
 		Level cur_student_level = levelDao.getById(cur_student.getGradLevel());
 
 		// setting up the date format
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Calendar c = Calendar.getInstance();
 		Date cur_date = new Date();
 		String cur_date_str = simpleDateFormat.format(cur_date);
@@ -239,11 +298,11 @@ public class TestDriver {
 			System.out.println("WARNING !!! You have reached the maximum number of books to check out");
 		} else {
 			// check for reservation on that book 
-			if (hasReservation(book_id)) {
+			if (bookHasReservation(book.getBookId())) {
 				System.out.println("The book has been reserved");
 			} else {
 				checkout_hist = new CheckoutHistory(
-						null, book_id, cur_student_id, 0, cur_date_str, null, due_date);
+						null, book.getBookId(), cur_student_id, 0, cur_date_str, null, due_date);
 				checkoutDao.insert(checkout_hist);
 				System.out.println("Check out successfully \n"
 						+ "Your book is due on " + due_date);
@@ -286,7 +345,7 @@ public class TestDriver {
 	}  
 	
 	// check if a the book has some one reserve on it 
-	public static Boolean hasReservation(Integer book_id) {
+	public static Boolean bookHasReservation(Integer book_id) {
 		Set<Reservation> reservations = null;
 		Boolean hasRsrv;
 		try {
@@ -479,9 +538,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE title = ?");
+					"SELECT * FROM Books WHERE title LIKE ?");
 
-			preparedStatement.setString(1, title);
+			preparedStatement.setString(1, "%"+title+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -498,9 +557,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE author = ?");
+					"SELECT * FROM Books WHERE author LIKE ?");
 
-			preparedStatement.setString(1, author);
+			preparedStatement.setString(1, "%"+author+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -517,9 +576,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE category = ?");
+					"SELECT * FROM Books WHERE category LIKE ?");
 
-			preparedStatement.setString(1, category);
+			preparedStatement.setString(1, "%"+category+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -530,7 +589,58 @@ public class TestDriver {
 		return resultSet;
 	}
 
+	public static Boolean studentHasReservation(Integer student_id) {
+		Set<Reservation> reservations = null;
+		Boolean hasRsrv;
+		try {
+			preparedStatement = conn.prepareStatement("SELECT * FROM Reservations\n" + 
+					"WHERE student_id=? ORDER BY date ASC LIMIT 1;");
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+			reservations = unpackReservation(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+				resultSet.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// if the set is not empty 
+		hasRsrv = (reservations.size() == 0) ?  false : true;		
+		return hasRsrv;
+	}
 
+	public static void reserveBook(Student student, Book book) {
+		int book_limit = levelDao.getById(student.getGradLevel()).getBookLimit();
+		String checkout;
+		Scanner sc = new Scanner(System.in);
+		
+		if (student.getBooksCheckedOut() == book_limit ) {
+			String d = simpleDateFormat.format(new Date());
+			Reservation reservation = new Reservation(null, book.getBookId(), cur_student_id, d);
+			reservationDao.insert(reservation);
+			System.out.println("Reservation for book \"" + book.getTitle() + "\" is placed on "
+					+ d);
+		} else if (book.getAvailability()) {
+			System.out.println("This book is available. Do you want to check out? (y/n)");
+			checkout = sc.nextLine();
+			if (checkout.equals("y")) {
+				createCheckoutHisotry(book, student.getStudentId());
+			} 
+		} else {
+			System.out.println("You have reached max book check out \n"
+					+ "Cannot reserve !!!");
+		}
+	}
 }
 
 
