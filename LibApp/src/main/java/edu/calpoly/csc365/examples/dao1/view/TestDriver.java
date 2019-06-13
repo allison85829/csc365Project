@@ -196,6 +196,39 @@ public class TestDriver {
 			System.exit(0);
 		}
 
+
+		int book_id;
+		Book book = null;
+
+		System.out.println("Enter option (c for checkout or r for reserve): ");
+		String opt = sc.nextLine();
+		System.out.println("Enter the book id: ");
+		book_id = sc.nextInt();
+
+		if (opt.equals("c")) {
+			// update availability
+			book = bookDao.getById(book_id);
+			book.setAvailability(false);
+			bookDao.update(book);
+
+			book = bookDao.getById(book_id);
+			createCheckoutHisotry(book_id, cur_student_id);
+
+			// closing the connection
+			try {
+				dm.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (opt.equals("r")) {
+			// insert into reservation table
+
+		}
+
+		
+
+
 	}
 
 	public static void returnBook(Scanner in){
