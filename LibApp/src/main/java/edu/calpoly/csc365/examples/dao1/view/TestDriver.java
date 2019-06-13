@@ -74,7 +74,9 @@ public class TestDriver {
 
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
+			displayOverdueBooks();
 			displayManagerMenu();
+
 
 			while (!input.equals("q")) {
 				displayPrompt();
@@ -87,6 +89,7 @@ public class TestDriver {
 		else {
 			displayCheckedOutBooks();
 			displayReservedBooks();
+			displayOverdueBooks();
 			displayStudentMenu();
 
 			while (!input.equals("q")) {
@@ -140,6 +143,22 @@ public class TestDriver {
 			System.out.println("no books currently checked out");
 		}
 		else {
+			printOutput(rs);
+		}
+	}
+
+	public static void displayOverdueBooks() throws  SQLException {
+		ResultSet rs = getOverdueBooks();
+
+		System.out.println();
+		System.out.println("list of overdue books");
+		System.out.println();
+
+		if (rs.next() == false) {
+			System.out.println("no books overdue");
+		}
+		else {
+
 			printOutput(rs);
 		}
 	}
@@ -420,7 +439,7 @@ public class TestDriver {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
 					"SELECT title FROM CheckoutHistories\n" +
 							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
-							"WHERE return_date IS NULL");
+							"WHERE return_date IS NULL AND CURDATE() > due_date");
 			resultSet = preparedStatement.executeQuery();
 
 		}
