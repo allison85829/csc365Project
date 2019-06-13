@@ -27,10 +27,7 @@ public class Student {
 		this.grad_level = grad_level;
 	}
 	
-	public Integer getBooksCheckedOut() {
-		return this.books_checked_out;
-	}
-	
+
 	public void setBooksCheckedOut(Integer books_checked_out) {
 		this.books_checked_out = books_checked_out;
 	}
@@ -40,5 +37,10 @@ public class Student {
 		return "student_id: " + student_id.toString() 
 		+ ", grad_level: " + grad_level.toString()
 		+ ", books_checked_out: " + books_checked_out.toString();
+	}
+
+	public int getBooksCheckedOut() {
+		// TODO Auto-generated method stub
+		return  this.books_checked_out;
 	}
 }
