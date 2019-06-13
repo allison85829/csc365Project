@@ -232,6 +232,7 @@ public class TestDriver {
 				viewMonthlyOverview(in);
 				break;
 			case "q":
+				dm.close();
 				break;
 			default:
 				System.out.println("Invalid input. Please try again.");
@@ -246,23 +247,26 @@ public class TestDriver {
 
 		if (option.equals("t")) {
 
-			System.out.println("Enter book title");
+			System.out.println("Enter book title:");
 			String title = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByTitle(title));
 		}
 		else if (option.equals("a")) {
 
-			System.out.println("Enter author name");
+			System.out.println("Enter author name:");
 			String author = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByAuthor(author));
 		}
 		else if (option.equals("c")) {
 
-			System.out.println("Enter category");
+			System.out.println("Enter category:");
 			String category = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByCategory(category));
 		}
 		else {
@@ -275,7 +279,7 @@ public class TestDriver {
 
 		System.out.println("Enter option (c for checkout or r for reserve): ");
 		String opt = sc.nextLine();
-		System.out.println("Enter the book id: ");
+		System.out.println("Enter book id to checkout/reserve: ");
 		book_id = sc.nextInt();
 		book = bookDao.getById(book_id);
 		Student cur_student = studentDao.getById(cur_student_id);
@@ -292,8 +296,8 @@ public class TestDriver {
 		} else if (opt.equals("r")) {
 			// insert into reservation table 
 			if (studentHasReservation(cur_student_id)) {
-				System.out.println("You has reached the reservation limit \n"
-						+ "Cannot reserve");
+				System.out.println("You have reached the reservation limit! \n"
+						+ "Cannot reserve.");
 			} else {
 				// check for max number of book checkout 
 				reserveBook(cur_student, book);
@@ -310,7 +314,7 @@ public class TestDriver {
 	}
 
 	public static void renewBook(Scanner in){
-		System.out.println("Enter book id");
+		System.out.println("Enter book id to renew: ");
 		int book_id = in.nextInt();
 		in.nextLine();
 
@@ -347,9 +351,11 @@ public class TestDriver {
 	public static void viewHistory(Scanner in) throws SQLException{
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
 		if (rs.next() == false) {
-			System.out.println("no previous checkout history");
+			System.out.println("\nYou have no previous checkout history!");
 		}
 		else {
+			System.out.println("\nCheckout History:");
+			rs.previous();
 			printOutput(rs);
 		}
 
@@ -399,7 +405,7 @@ public class TestDriver {
 		} else {
 			// check for reservation on that book 
 			if (bookHasReservation(book.getBookId())) {
-				System.out.println("The book has been reserved");
+				System.out.println("The book has been reserved.");
 			} else {
 				checkout_hist = new CheckoutHistory(
 						null, book.getBookId(), cur_student_id, 0, cur_date_str, null, due_date);
