@@ -232,6 +232,7 @@ public class TestDriver {
 				viewMonthlyOverview(in);
 				break;
 			case "q":
+				dm.close();
 				break;
 			default:
 				System.out.println("Invalid input. Please try again.");
@@ -246,23 +247,26 @@ public class TestDriver {
 
 		if (option.equals("t")) {
 
-			System.out.println("Enter book title");
+			System.out.println("Enter book title:");
 			String title = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByTitle(title));
 		}
 		else if (option.equals("a")) {
 
-			System.out.println("Enter author name");
+			System.out.println("Enter author name:");
 			String author = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByAuthor(author));
 		}
 		else if (option.equals("c")) {
 
-			System.out.println("Enter category");
+			System.out.println("Enter category:");
 			String category = sc.nextLine();
 
+			System.out.println("\nSearch Results:");
 			printOutput(getBookByCategory(category));
 		}
 		else {
@@ -273,9 +277,9 @@ public class TestDriver {
 		int book_id;
 		Book book = null;
 
-		System.out.println("Enter option (c for checkout or r for reserve): ");
+		System.out.println("\nEnter option (c for checkout or r for reserve): ");
 		String opt = sc.nextLine();
-		System.out.println("Enter the book id: ");
+		System.out.println("Enter book id to checkout/reserve: ");
 		book_id = sc.nextInt();
 		book = bookDao.getById(book_id);
 		Student cur_student = studentDao.getById(cur_student_id);
@@ -289,8 +293,8 @@ public class TestDriver {
 		} else if (opt.equals("r")) {
 			// insert into reservation table 
 			if (studentHasReservation(cur_student_id)) {
-				System.out.println("You has reached the reservation limit \n"
-						+ "Cannot reserve");
+				System.out.println("You have reached the reservation limit! \n"
+						+ "Cannot reserve.");
 			} else {
 				// check for max number of book checkout 
 				reserveBook(cur_student, book);
@@ -298,7 +302,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void returnBook(Scanner in){
+	public static void returnBook(Scanner in) throws SQLException {
 		// Put code in here 
 		int book_id;
 		System.out.println("Enter book id for return: ");
@@ -327,20 +331,21 @@ public class TestDriver {
 	
 			// remove the reservation 
 			reservationDao.delete(next_resv);
-			System.out.println("Return successfully");
+			System.out.println("\nBook was returned successfully!");
 		} else {
 			// update book availability
 			Book book = bookDao.getById(book_id);
 			book.setAvailability(true);
 			bookDao.update(book);
 			
-			System.out.println("Return successfully");
+			System.out.println("\nBook was returned successfully!");
 		}
-		
+
+		displayCheckedOutBooks();
 	}
 
 	public static void renewBook(Scanner in){
-		System.out.println("Enter book id");
+		System.out.println("Enter book id to renew: ");
 		int book_id = in.nextInt();
 		in.nextLine();
 
@@ -377,9 +382,11 @@ public class TestDriver {
 	public static void viewHistory(Scanner in) throws SQLException{
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
 		if (rs.next() == false) {
-			System.out.println("no previous checkout history");
+			System.out.println("\nYou have no previous checkout history!");
 		}
 		else {
+			System.out.println("\nCheckout History:");
+			rs.previous();
 			printOutput(rs);
 		}
 
@@ -429,7 +436,7 @@ public class TestDriver {
 				checkout_hist = new CheckoutHistory(
 						null, book.getBookId(), cur_student_id, 0, cur_date_str, null, due_date);
 				checkoutDao.insert(checkout_hist);
-				System.out.println("Check out successfully \n"
+				System.out.println("\nBook was checked out successfully! \n"
 						+ "Your book is due on " + due_date);
 				displayCheckedOutBooks();
 			}
@@ -837,16 +844,16 @@ public class TestDriver {
 			String d = simpleDateFormat.format(new Date());
 			Reservation reservation = new Reservation(null, book.getBookId(), cur_student_id, d);
 			reservationDao.insert(reservation);
-			System.out.println("Reservation for book \"" + book.getTitle() + "\" is placed on "
+			System.out.println("\nReservation for book \"" + book.getTitle() + "\" is placed on "
 					+ d);
 		} else if (book.getAvailability()) {
-			System.out.println("This book is available. Do you want to check out? (y/n)");
+			System.out.println("\nThis book is available. Do you want to check out? (y/n)");
 			checkout = sc.nextLine();
 			if (checkout.equals("y")) {
 				createCheckoutHisotry(book, student.getStudentId());
 			} 
 		} else {
-			System.out.println("You have reached max book check out \n"
+			System.out.println("\nYou have reached max book check out limit! \n"
 					+ "Cannot reserve !!!");
 		}
 	}
