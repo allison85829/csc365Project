@@ -33,7 +33,7 @@ public class TestDriver {
 		cur_student_id = 1;
 
 		try {
-			dm = DaoManager.getInstance().setProperties("C:\\Users\\MAKITEH\\Desktop\\School\\properties.xml");
+			dm = DaoManager.getInstance().setProperties("properties.xml");
 			bookDao = dm.getBookDao();
 			studentDao = dm.getStudentDao();
 			levelDao = dm.getLevelDao();
@@ -259,8 +259,6 @@ public class TestDriver {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		return resultSet;
 	}
 
 	//------------------------ manager queries ----------------------------------------
