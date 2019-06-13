@@ -68,10 +68,8 @@ INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, ret
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (27, 10, "2019-05-25", "2019-06-01", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (28, 10, "2019-05-25", "2019-06-01", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (3, 4, "2019-06-01", "2019-06-15", NULL, 0);
---
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (6, 4, "2019-06-01", "2019-06-15", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (12, 4, "2019-06-01", "2019-06-15", NULL, 0);
-INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (7, 4, "2019-06-01", "2019-06-15", NULL, 0);
 INSERT INTO CheckoutHistories (book_id, student_id, checkout_date, due_date, return_date, times_renewed) VALUES (2, 14, "2019-06-05", "2019-06-19", NULL, 0);
 
 -- Reservations
@@ -86,38 +84,40 @@ UPDATE Students SET books_checked_out = 3 WHERE student_id = 10;
 
 
 
-/** Tests ordered by section
-    1. Check out a book
-        - Show that the search functionality to check out a book
-        - Show that the student's page is updated
-        - Search the book to show that it is no longer available
-        - Try to check out a book that is not available - should fail
-        - Try to have an undergrad student check out more than 3 books (student 10)
-        - Try to have a grad student check out more than 5 books (student 4)
-    2. Return a book
-        - Show the updated return date
-        - Search the book to show that it is now available
-    3. Reserve a book
-        - Use the search to bring up a book that is not currently available
-        - Reserve that book, show wherever reserves are displayed
-        - Show that when that book is returned it automatically checks out to the person who reserved it
-    4. Renew a book
-        - Show that a book renewed by an undergrad student gets renewed for 7 days (student 10)
-        - Show that a book renewed by a grad student gets renewed for 14 days (student 4)
-        - Try to have an undergrad student renew a book that has already been renewed (student 10)
-        - Try to have a grad student renew a book that has already been renewed (student 4)
-        - Try to have a student renew a book that is reserved by another (student 10, book 15)
-    5. Library manager interface
+/** Tests ordered by login id
+    1. Undergrad student (student 10)
+        - Show the inital screen with books currently checked out and check out history
+        - Try to check out a book (search for author Garth Nix)
+            - Show that limit of 3 is already hit
+        - Return a book
+            - Show it's gone from currently checked out books
+            - Search for the book, show that it's now available to be checked out
+        - Check out a book
+            - Show that it appears in checked out list
+            - Search for the book and show that it is now unavailable
+        - Renew a book (not book 15 Maximum Ride)
+            - Show that it is renewed for 7 days
+            - Try to renew the same book, show they hit maximum number of renewals
+            - Now try to renew book 15 (Maximum Ride) - shouldn't be able to, it's reserved
+    2. Grad student (student 4)
+        - Show the inital screen with overdue books, books currently checked out, and check out history
+        - Try to check out an unavailable book (book 27 Saving the World and Other Extreme Sports)
+            - Then reserve it, show it reserved somewhere
+        - Show that a book can be renewed (book 3 Mouse Paint)
+        - Switch back to student 4, return book 27 (Saving the World and Other Extreme Sports)
+            - Switch back to student 10
+            - Show that it was automatically checked out for student 4 since they reserved it
+        - Try to check out another book, show that the student hit their limit of 5 books
+        - Renew a book, show the due date has been moved up 14 days
+            - Try to renew the same book again, show it has been renewed maximum amount of time already
+    3. Library manager interface (id 0)
         - Show the month-by-month usage of the library for the year
         - Show the list of all books that are checked out
         - Show the list of all books that are overdue
 
-
-    Tests ordered by login id
-    1. Undergrad student (student 4)
-        - Show the inital screen with books currently checked out, and check out history
-        - 
-    2. Grad student (student 4)
-        - Show the inital screen with overdue books, books currently checked out, and check out history
-        - 
+    Search options
+        Authors (have multiple books, should be at least one available and one checked out)
+            - Garth Nix
+            - Rick Riordan
+            - James Patterson
 */
