@@ -43,7 +43,7 @@ public class TestDriver {
 	public static String pattern = "yyyy-MM-dd";
 	public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, ParseException {
 		// TODO Auto-generated method stub
 		cur_student_id = 1;
 
@@ -66,7 +66,7 @@ public class TestDriver {
 		userInputDriver();
 	}
 
-	public static void userInputDriver() throws SQLException{
+	public static void userInputDriver() throws SQLException, ParseException{
 		String input = "";
 
 		displayWelcomeMessage();
@@ -261,7 +261,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void executeStudentCommand(String input, Scanner in) throws SQLException{
+	public static void executeStudentCommand(String input, Scanner in) throws SQLException, ParseException{
 		switch(input)
 		{
 			case "s":
@@ -404,29 +404,32 @@ public class TestDriver {
 		displayCheckedOutBooks();
 	}
 
-	public static void renewBook(Scanner in){
-		System.out.println("Enter book id to renew: ");
+	public static void renewBook(Scanner in) throws  SQLException, ParseException{
+		System.out.println("Enter book id");
 		int book_id = in.nextInt();
 		in.nextLine();
+
+		Student student = studentDao.getById(cur_student_id);
+		int level = student.getGradLevel();
+		int time_duration;
+		if (level == 1) {
+			time_duration = 7;
+		}
+		else {
+			time_duration = 14;
+		}
 
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
 
+
+
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"UPDATE CheckoutHistories\n" +
-							"SET due_date = DATE_ADD(due_date, INTERVAL \n" +
-							"(SELECT DISTINCT checkout_duration FROM Levels \n" +
-							"JOIN Students ON grad_level = level_id\n" +
-							"WHERE level_id = ?)\n" +
-							" DAY),\n" +
-							"    times_renewed = times_renewed + 1\n" +
-							"WHERE book_id = ?\n" +
-							"    AND return_date IS NULL;");
+					"SELECT entry_id FROM CheckoutHistories WHERE book_id = ? AND student_id = ? AND return_date IS NULL");
 
-			Student student = studentDao.getById(cur_student_id);
-			preparedStatement.setInt(1, student.getGradLevel());
-			preparedStatement.setInt(2, book_id);
+			preparedStatement.setInt(1, book_id);
+			preparedStatement.setInt(2, cur_student_id);
 
 			resultSet = preparedStatement.executeQuery();
 
@@ -435,6 +438,32 @@ public class TestDriver {
 			e.printStackTrace();
 		}
 
+		int val=0;
+
+		Boolean b = resultSet.first();
+		System.out.println(b);
+		val = resultSet.getInt(1);
+
+
+		CheckoutHistory checkoutHistory = checkoutDao.getById(val);
+
+		// setting up the date format
+		Calendar c = Calendar.getInstance();
+		Date cur_date = simpleDateFormat.parse(checkoutHistory.getDueDate());
+		String cur_date_str = simpleDateFormat.format(cur_date);
+
+		//Setting the date to the given date
+		c.setTime(cur_date);
+		// add checkout duration to get the due date
+		c.add(Calendar.DATE, time_duration);
+		String due_date = simpleDateFormat.format(c.getTime());
+
+		CheckoutHistory updated = new CheckoutHistory(checkoutHistory.getEntryId(),
+				checkoutHistory.getBookId(), checkoutHistory.getStudentId(),
+				checkoutHistory.getTimesRenewed()+1, checkoutHistory.getCheckoutDate(),
+				checkoutHistory.getReturnDate(), due_date);
+
+		checkoutDao.update(updated);
 	}
 
 

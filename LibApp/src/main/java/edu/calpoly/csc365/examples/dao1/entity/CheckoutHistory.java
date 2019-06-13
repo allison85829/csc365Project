@@ -20,6 +20,18 @@ public class CheckoutHistory {
 		this.return_date  = return_date;
 		this.due_date  = due_date;
 	}
+
+	public CheckoutHistory(Integer book_id,
+						   Integer student_id, Integer times_renewed,
+						   String checkout_date, String return_date, String due_date ) {
+		this.entry_id = entry_id;
+		this.book_id = book_id;
+		this.student_id = student_id;
+		this.times_renewed = times_renewed;
+		this.checkout_date  = checkout_date;
+		this.return_date  = return_date;
+		this.due_date  = due_date;
+	}
 	
 	public Integer getEntryId() {
 		return this.entry_id;

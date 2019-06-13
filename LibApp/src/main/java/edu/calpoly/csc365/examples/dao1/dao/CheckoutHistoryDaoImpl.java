@@ -109,7 +109,7 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 			preparedStatement = this.conn.prepareStatement(
 					"UPDATE CheckoutHistories SET book_id=?, student_id=?, "
 							+ "times_renewed=?, checkout_date=?, "
-							+ "return_date=?, due_date=? WHERE reservation_id=?");
+							+ "return_date=?, due_date=? WHERE entry_id=?");
 			preparedStatement.setInt(1, obj.getBookId());
 			preparedStatement.setInt(2, obj.getStudentId());
 			preparedStatement.setInt(3, obj.getTimesRenewed());
