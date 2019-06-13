@@ -12,7 +12,7 @@ import edu.calpoly.csc365.examples.dao1.entity.Reservation;
 import edu.calpoly.csc365.examples.dao1.entity.Reservation;
 
 public class ReservationDaoImpl implements Dao<Reservation> {
-	private Connection conn;
+	public static Connection conn;
 
 	public ReservationDaoImpl(Connection conn) {
 		this.conn = conn;

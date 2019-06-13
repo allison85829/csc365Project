@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import edu.calpoly.csc365.examples.dao1.dao.CheckoutHistoryDaoImpl;
 import edu.calpoly.csc365.examples.dao1.dao.Dao;
 import edu.calpoly.csc365.examples.dao1.dao.DaoManager;
+import edu.calpoly.csc365.examples.dao1.dao.ReservationDaoImpl;
 import edu.calpoly.csc365.examples.dao1.entity.Book;
 import edu.calpoly.csc365.examples.dao1.entity.Level;
 import edu.calpoly.csc365.examples.dao1.entity.Reservation;
@@ -132,19 +133,30 @@ public class TestDriver {
 
 		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
 
-		System.out.println("Currently checkout books");
-		System.out.println();
+		System.out.println("\nCurrently Checked Out Books:");
 
 		if (rs.next() == false) {
-			System.out.println("no books currently checked out");
+			System.out.println("You have no books currently checked out!");
 		}
 		else {
+			rs.previous();
 			printOutput(rs);
 		}
 	}
 
-	public static void displayReservedBooks(){
-		// Put code in here
+	public static void displayReservedBooks() throws  SQLException{
+
+		ResultSet rs = getReservedBooksByStudentId(cur_student_id);
+
+		System.out.println("\nCurrently Reserved Books:");
+
+		if (rs.next() == false) {
+			System.out.println("You have no books currently reserved!");
+		}
+		else {
+			rs.previous();
+			printOutput(rs);
+		}
 	}
 
 	public static void executeStudentCommand(String input, Scanner in) throws SQLException{
@@ -496,6 +508,29 @@ public class TestDriver {
 							"WHERE student_id = ?\n" +
 							"    AND return_date IS NULL\n" +
 							"ORDER BY due_date");
+
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getReservedBooksByStudentId(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = ReservationDaoImpl.conn.prepareStatement(
+					"SELECT Books.book_id, title, author, date\n" +
+							"FROM Reservations\n" +
+							"JOIN Books ON Reservations.book_id = Books.book_id\n" +
+							"WHERE student_id = ?\n" +
+							"ORDER BY date");
 
 			preparedStatement.setInt(1, student_id);
 			resultSet = preparedStatement.executeQuery();
