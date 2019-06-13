@@ -304,6 +304,9 @@ public class TestDriver {
 		System.out.println("Search book by title (t), author (a), or category (c)");
 		sc.nextLine();
 		String option = sc.nextLine();
+		ResultSet rs;
+		String s;
+		Boolean b;
 
 		if (option.equals("t")) {
 
@@ -311,7 +314,26 @@ public class TestDriver {
 			String title = sc.nextLine();
 
 			System.out.println("\nSearch Results:");
-			printOutput(getBookByTitle(title));
+			rs = getBookByTitle(title);
+
+			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+
+			while (rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				if (rs.getInt(5) == 0) {
+					b = false;
+				}
+				else {
+					b = true;
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+						rs.getString(3), rs.getString(4), b);
+			}
 		}
 		else if (option.equals("a")) {
 
@@ -319,7 +341,26 @@ public class TestDriver {
 			String author = sc.nextLine();
 
 			System.out.println("\nSearch Results:");
-			printOutput(getBookByAuthor(author));
+			rs = getBookByAuthor(author);
+
+			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+
+			while (rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				if (rs.getInt(5) == 0) {
+					b = false;
+				}
+				else {
+					b = true;
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+						rs.getString(3), rs.getString(4), b);
+			}
 		}
 		else if (option.equals("c")) {
 
@@ -327,7 +368,26 @@ public class TestDriver {
 			String category = sc.nextLine();
 
 			System.out.println("\nSearch Results:");
-			printOutput(getBookByCategory(category));
+			rs = getBookByCategory(category);
+
+			System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
+
+			while (rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				if (rs.getInt(5) == 0) {
+					b = false;
+				}
+				else {
+					b = true;
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-30s | %-9b\n", rs.getInt(1), s,
+						rs.getString(3), rs.getString(4), b);
+			}
 		}
 		else {
 			System.exit(0);
