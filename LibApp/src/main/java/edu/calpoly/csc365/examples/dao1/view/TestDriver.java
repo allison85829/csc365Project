@@ -225,7 +225,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void executeManagerCommand(String input, Scanner in) {
+	public static void executeManagerCommand(String input, Scanner in) throws SQLException {
 		switch(input)
 		{
 			case "v":
@@ -355,8 +355,23 @@ public class TestDriver {
 
 	}
 
-	public static void viewMonthlyOverview(Scanner in){
-		printOutput(getCheckoutSummary());
+	public static void viewMonthlyOverview(Scanner in) throws SQLException {
+		ResultSet rs = getCheckoutSummary();
+		String s;
+
+		System.out.printf("%-50s | Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec | Year\n", "Title");
+		while(rs.next()) {
+			s = rs.getString(1);
+			if (s.length() > 50) {
+				s = s.substring(0, 50);
+			}
+
+			System.out.printf("%-50s | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %4d\n",
+					s, rs.getInt(2), rs.getInt(3),
+					rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7),
+					rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11),
+					rs.getInt(12), rs.getInt(13),rs.getInt(14));
+		}
 	}
 
 	public static void createCheckoutHisotry(Book book, int student_id) {
