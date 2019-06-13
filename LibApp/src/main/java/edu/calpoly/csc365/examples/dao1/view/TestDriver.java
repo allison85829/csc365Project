@@ -134,8 +134,8 @@ public class TestDriver {
 	}
 
 	public static void displayAllCheckedOutBooks() throws  SQLException{
-
 		ResultSet rs = getAllCheckedOutBooks(cur_student_id);
+		String s;
 
 		System.out.println("\nAll Currently Checked Out Books:");
 
@@ -144,13 +144,25 @@ public class TestDriver {
 		}
 		else {
 			rs.previous();
-			printOutput(rs);
+
+			System.out.printf("Student | Book | %-50s | %-30s | Checkout Date | Due Date\n", "Title", "Author");
+
+			while(rs.next()) {
+				s = rs.getString(3);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-7d | %-4d | %-50s | %-30s | %-13s | %-8s\n", rs.getInt(1),
+						rs.getInt(2), s, rs.getString(4), rs.getString(5),
+						rs.getString(6));
+			}
 		}
 	}
 
-	public static void displayCheckedOutBooks() throws  SQLException{
-
+	public static void displayCheckedOutBooks() throws  SQLException {
 		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
+		String s;
 
 		System.out.println("\nCurrently Checked Out Books:");
 
@@ -159,13 +171,25 @@ public class TestDriver {
 		}
 		else {
 			rs.previous();
-			printOutput(rs);
+
+			System.out.printf("Book | %-50s | %-30s | Checkout Date | Due Date\n", "Title", "Author");
+
+			while (rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-13s | %-8s\n",
+						rs.getInt(1), s, rs.getString(3), rs.getString(4),
+						rs.getString(5));
+			}
 		}
 	}
 
 	public static void displayReservedBooks() throws  SQLException {
-
 		ResultSet rs = getReservedBooksByStudentId(cur_student_id);
+		String s;
 
 		System.out.println("\nCurrently Reserved Books:");
 
@@ -173,26 +197,62 @@ public class TestDriver {
 			System.out.println("You have no books currently reserved!");
 		} else {
 			rs.previous();
-			printOutput(rs);
+
+			System.out.printf("Book | %-50s | %-30s | Date Placed\n", "Title", "Author");
+
+			while(rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-11s\n", rs.getInt(1), s,
+						rs.getString(3), rs.getString(4));
+			}
 		}
 	}
 
 	public static void displayOverdueBooks() throws  SQLException {
 		ResultSet rs = getOverdueBooks(cur_student_id);
+		String s;
 
 		if (rs.next() != false) {
 			System.out.println("\nWarning! The following books are overdue:");
 			rs.previous();
-			printOutput(rs);
+
+			System.out.printf("Book | Title\n");
+
+			while (rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-4d | %-50s\n", rs.getInt(1), s);
+			}
+
 		}
 	}
 
 	public static void displayAllOverdueBooks() throws  SQLException {
 		ResultSet rs = getAllOverdueBooks();
+		String s;
 
 		if (rs.next() != false) {
 			System.out.println("\nThe following students currently have overdue books:");
 			rs.previous();
+
+			System.out.printf("Student | Title\n");
+
+			while(rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-7d | %-50s\n", rs.getInt(1), s);
+			}
+
 			printOutput(rs);
 		}
 
