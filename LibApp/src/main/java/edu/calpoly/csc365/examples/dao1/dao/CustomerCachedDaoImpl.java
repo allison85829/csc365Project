@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Set;
 
 public class CustomerCachedDaoImpl implements CachedDao<Customer> {
-  private Connection conn;
+  public Connection conn;
 
   public CustomerCachedDaoImpl(Connection conn) {
     this.conn = conn;

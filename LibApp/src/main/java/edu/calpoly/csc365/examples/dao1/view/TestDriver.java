@@ -259,9 +259,12 @@ public class TestDriver {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		return resultSet;
 	}
 
-	public static ResultSet getCheckoutBooks(Dao<CheckoutHistory> historyDao) {
+	//------------------------ manager queries ----------------------------------------
+	public static ResultSet getCheckoutBooks() {
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
 
@@ -275,9 +278,188 @@ public class TestDriver {
 			e.printStackTrace();
 		}
 
+		return resultSet;
+	}
+
+	public static ResultSet getOverdueBooks() {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT title FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"WHERE return_date IS NULL");
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		return resultSet;
 	}
+
+	public static ResultSet getCheckoutSummary() {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"(SELECT title,\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 1  THEN 1 ELSE 0 END) AS 'Jan',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 2 THEN 1 ELSE 0 END) AS 'Feb',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 3 THEN 1 ELSE 0 END) AS 'Mar',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 4 THEN 1 ELSE 0 END) AS 'Apr',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 5 THEN 1 ELSE 0 END) AS 'May',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 6 THEN 1 ELSE 0 END) AS 'Jun',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 7 THEN 1 ELSE 0 END) AS 'Jul',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 8 THEN 1 ELSE 0 END) AS 'Aug',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 9 THEN 1 ELSE 0 END) AS 'Sep',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 10 THEN 1 ELSE 0 END) AS 'Oct',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 11 THEN 1 ELSE 0 END) AS 'Nov',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 12 THEN 1 ELSE 0 END) AS 'Dec',\n" +
+							"    COUNT(*) AS 'Year'\n" +
+							"FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"WHERE YEAR(checkout_date) = 2019\n" +
+							"GROUP BY CheckoutHistories.book_id)\n" +
+							"UNION\n" +
+							"SELECT '' AS 'title', '' AS 'Jan', '' AS 'Feb', '' AS 'Mar', '' AS 'Apr', '' AS 'May', '' AS 'Jun', '' AS 'Jul', '' AS 'Aug', '' AS 'Sep', '' AS 'Oct', '' AS 'Nov', '' AS 'Dec', '' AS 'Year'\n" +
+							"UNION\n" +
+							"(SELECT 'Totals' AS title,\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 1  THEN 1 ELSE 0 END) AS 'Jan',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 2 THEN 1 ELSE 0 END) AS 'Feb',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 3 THEN 1 ELSE 0 END) AS 'Mar',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 4 THEN 1 ELSE 0 END) AS 'Apr',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 5 THEN 1 ELSE 0 END) AS 'May',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 6 THEN 1 ELSE 0 END) AS 'Jun',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 7 THEN 1 ELSE 0 END) AS 'Jul',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 8 THEN 1 ELSE 0 END) AS 'Aug',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 9 THEN 1 ELSE 0 END) AS 'Sep',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 10 THEN 1 ELSE 0 END) AS 'Oct',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 11 THEN 1 ELSE 0 END) AS 'Nov',\n" +
+							"    SUM(CASE WHEN MONTH(checkout_date) = 12 THEN 1 ELSE 0 END) AS 'Dec',\n" +
+							"    COUNT(*) AS 'Year'\n" +
+							"FROM CheckoutHistories\n" +
+							"WHERE YEAR(checkout_date) = 2019)");
+			resultSet = preparedStatement.executeQuery();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	//----------------------------------------student queries--------------------------------------------------------
+
+	public static ResultSet getCurrentCheckoutHistoryByStudentId(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Books.book_id, title, author, checkout_date, due_date\n" +
+							"FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"WHERE student_id = ?\n" +
+							"    AND return_date IS NULL\n" +
+							"ORDER BY due_date");
+
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getPreviousCheckoutHistoryByStudentId(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Books.book_id, title, author, checkout_date, due_date, return_date\n" +
+							"FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"WHERE student_id = ?\n" +
+							"    AND return_date IS NOT NULL\n" +
+							"ORDER BY due_date");
+
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getBookByTitle(String title) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT * FROM Books WHERE title = ?");
+
+			preparedStatement.setString(1, title);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getBookByAuthor(String author) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT * FROM Books WHERE author = ?");
+
+			preparedStatement.setString(1, author);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getBookByCategory(String category) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT * FROM Books WHERE category = ?");
+
+			preparedStatement.setString(1, category);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+
 }
 
 
