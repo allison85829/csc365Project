@@ -480,9 +480,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE title = ?");
+					"SELECT * FROM Books WHERE title LIKE ?");
 
-			preparedStatement.setString(1, title);
+			preparedStatement.setString(1, "%"+title+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -499,9 +499,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE author = ?");
+					"SELECT * FROM Books WHERE author LIKE ?");
 
-			preparedStatement.setString(1, author);
+			preparedStatement.setString(1, "%"+author+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -518,9 +518,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE category = ?");
+					"SELECT * FROM Books WHERE category LIKE ?");
 
-			preparedStatement.setString(1, category);
+			preparedStatement.setString(1, "%"+category+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
