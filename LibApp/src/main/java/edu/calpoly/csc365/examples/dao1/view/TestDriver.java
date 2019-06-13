@@ -88,11 +88,12 @@ public class TestDriver {
 
 		// Else, prompt student menu
 		else {
-			displayCheckedOutBooks();
+			//displayCheckedOutBooks();
 			displayReservedBooks();
 			displayOverdueBooks();
 
 			while (!input.equals("q")) {
+				displayCheckedOutBooks();
 				displayStudentMenu();
 				displayPrompt();
 				input = in.next();
@@ -322,6 +323,7 @@ public class TestDriver {
 				System.out.println("No search results");
 			}
 			else {
+				rs.previous();
 				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
 				while (rs.next()) {
@@ -354,6 +356,7 @@ public class TestDriver {
 				System.out.println("No search results");
 			}
 			else {
+				rs.previous();
 				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
 				while (rs.next()) {
@@ -386,6 +389,7 @@ public class TestDriver {
 				System.out.println("No search results");
 			}
 			else {
+				rs.previous();
 				System.out.printf("Book | %-50s | %-30s | %-30s | Available\n", "Title", "Author", "Category");
 
 				while (rs.next()) {
@@ -453,17 +457,18 @@ public class TestDriver {
 		CheckoutHistory return_hist = getCheckoutHistReturn(cur_student_id, book_id);
 		
 		cur_date = simpleDateFormat.format(new Date());
-		return_hist.setReturnDate(cur_date); // set the return date 
+		return_hist.setReturnDate(cur_date); // set the return date
 		checkoutDao.update(return_hist);
 		
 		// if someone reserved the book, automatically checkout for that person 
 		if (reserved) {
+			System.out.println("reserved ");
 			Reservation next_resv = (Reservation)reservations.toArray()[0];
 			Student resv_student = studentDao.getById(next_resv.getStudentId());
 			Level student_level = levelDao.getById(resv_student.getGradLevel());
 			String due_date = calculateDueDate(student_level);
 			// checkout the book for the next reservation
-			CheckoutHistory new_checkout_hist = new CheckoutHistory(null, book_id,cur_student_id, 0, 
+			CheckoutHistory new_checkout_hist = new CheckoutHistory(null, book_id,resv_student.getStudentId(), 0,
 					cur_date, null,  due_date);
 			checkoutDao.insert(new_checkout_hist);
 	
@@ -475,11 +480,15 @@ public class TestDriver {
 			Book book = bookDao.getById(book_id);
 			book.setAvailability(true);
 			bookDao.update(book);
-			
+
+			Student cur_student  = studentDao.getById(cur_student_id);
+			int num_book_checkout = cur_student.getBooksCheckedOut();
+			cur_student.setBooksCheckedOut(num_book_checkout-1);
+			studentDao.update(cur_student);
 			System.out.println("\nBook was returned successfully!");
 		}
 
-		displayCheckedOutBooks();
+		// displayCheckedOutBooks();
 	}
 
 	public static void renewBook(Scanner in) throws  SQLException, ParseException{
@@ -502,6 +511,8 @@ public class TestDriver {
 
 
 
+
+
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
 					"SELECT entry_id FROM CheckoutHistories WHERE book_id = ? AND student_id = ? AND return_date IS NULL");
@@ -516,14 +527,19 @@ public class TestDriver {
 			e.printStackTrace();
 		}
 
+
+
 		int val=0;
 
 		Boolean b = resultSet.first();
-		System.out.println(b);
 		val = resultSet.getInt(1);
 
-
 		CheckoutHistory checkoutHistory = checkoutDao.getById(val);
+
+		if (checkoutHistory.getTimesRenewed() > 0) {
+			System.out.println("Can't renew: renewal limit reached");
+			System.exit(0);
+		}
 
 		// setting up the date format
 		Calendar c = Calendar.getInstance();
@@ -609,7 +625,9 @@ public class TestDriver {
 			// check for reservation on that book 
 			Set<Reservation> reservations = bookHasReservation(book.getBookId());
 			boolean reserved = (reservations.size() == 0) ? false : true;
-			if (reserved) {
+			if (!book.getAvailability()) {
+				System.out.println("The book is not available for checkout");
+			} else if  (reserved) {
 				System.out.println("The book has been reserved");
 			} else {
 				book.setAvailability(false);
@@ -845,8 +863,7 @@ public class TestDriver {
 					"SELECT Books.book_id, title, author, checkout_date, due_date\n" +
 							"FROM CheckoutHistories\n" +
 							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
-							"WHERE student_id = ?\n" +
-							"    AND return_date IS NULL\n" +
+							"WHERE student_id = ? AND return_date IS NULL\n" +
 							"ORDER BY due_date");
 
 			preparedStatement.setInt(1, student_id);
@@ -1020,19 +1037,19 @@ public class TestDriver {
 		int book_limit = levelDao.getById(student.getGradLevel()).getBookLimit();
 		String checkout;
 		Scanner sc = new Scanner(System.in);
-		
-		if (student.getBooksCheckedOut() != book_limit ) {
+
+		if (book.getAvailability()) {
+			System.out.println("\nThis book is available. Do you want to check out? (y/n)");
+			checkout = sc.nextLine();
+			if (checkout.equals("y")) {
+				createCheckoutHisotry(book, student.getStudentId());
+			}
+		} else if (student.getBooksCheckedOut() != book_limit ) {
 			String d = simpleDateFormat.format(new Date());
 			Reservation reservation = new Reservation(null, book.getBookId(), cur_student_id, d);
 			reservationDao.insert(reservation);
 			System.out.println("\nReservation for book \"" + book.getTitle() + "\" is placed on "
 					+ d);
-		} else if (book.getAvailability()) {
-			System.out.println("\nThis book is available. Do you want to check out? (y/n)");
-			checkout = sc.nextLine();
-			if (checkout.equals("y")) {
-				createCheckoutHisotry(book, student.getStudentId());
-			} 
 		} else {
 			System.out.println("\nYou have reached max book check out limit! \n"
 					+ "Cannot reserve !!!");

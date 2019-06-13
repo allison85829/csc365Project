@@ -82,9 +82,10 @@ public class StudentDaoImpl implements Dao<Student> {
 		ResultSet resultSet = null;
 		try {
 			preparedStatement = this.conn.prepareStatement(
-					"UPDATE Students SET grad_level=? WHERE student_id=?");
+					"UPDATE Students SET grad_level=?, books_checked_out=? WHERE student_id=?");
 			preparedStatement.setInt(1, obj.getGradLevel());
-			preparedStatement.setInt(2, obj.getStudentId());
+			preparedStatement.setInt(2, obj.getBooksCheckedOut());
+			preparedStatement.setInt(3, obj.getStudentId());
 			successful = preparedStatement.execute();
 
 		} catch (SQLException e) {

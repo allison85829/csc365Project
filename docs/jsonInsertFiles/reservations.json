@@ -1,0 +1,26 @@
+[
+    {
+      "reservation_id": "",
+      "book_id": 3,
+      "student_id": 8,
+      "date": "2019-06-05"
+    },
+    {
+      "reservation_id": "",
+      "book_id": 3,
+      "student_id": 1,
+      "date": "2019-06-09"
+    },
+    {
+      "reservation_id": "",
+      "book_id": 15,
+      "student_id": 2,
+      "date": "2019-06-05"
+    },
+    {
+      "reservation_id": "",
+      "book_id": 5,
+      "student_id": 11,
+      "date": "2019-06-10"
+    }
+   ]

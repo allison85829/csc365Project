@@ -1,0 +1,16 @@
+[
+    {
+      "level_id": "",
+      "level_name": "Undergraduate",
+      "book_limit": 3,
+      "checkout_duration": 7,
+      "renew_limit": 1
+    },
+    {
+      "level_id": "",
+      "level_name": "Graduate",
+      "book_limit": 5,
+      "checkout_duration": 14,
+      "renew_limit": 1
+    }
+   ]

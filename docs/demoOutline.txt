@@ -1,0 +1,35 @@
+1. Log in as an undergrad student (student 10)
+    - Show the inital screen with books currently checked out and check out history
+    - Try to check out a book (search for author Garth Nix)
+        - Show that limit of 3 is already hit
+    - Return a book
+        - Show it's gone from currently checked out books
+        - Search for the book, show that it's now available to be checked out
+    - Check out a book
+        - Show that it appears in checked out list
+        - Search for the book and show that it is now unavailable
+    - Renew a book (not book 15 The Lightning Thief)
+        - Show that it is renewed for 7 days
+        - Try to renew the same book, show they hit maximum number of renewals
+        - Now try to renew book 15 (The Lightning Thief) - shouldn't be able to, it's reserved
+2. Log in as a grad student (student 4)
+    - Show the inital screen with overdue books, books currently checked out, and check out history
+    - Try to check out an unavailable book (book 30 Saving the World and Other Extreme Sports)
+        - Then reserve it, show it reserved somewhere
+    - Show that a book can be renewed (book 3 Mouse Paint)
+    - Switch back to student 4, return book 30 (Saving the World and Other Extreme Sports)
+        - Switch back to student 10
+        - Show that it was automatically checked out for student 4 since they reserved it
+    - Try to check out another book, show that the student hit their limit of 5 books
+    - Renew a book, show the due date has been moved up 14 days
+        - Try to renew the same book again, show it has been renewed maximum amount of time already
+3. Library manager interface (id 0)
+    - Show the month-by-month usage of the library for the year
+    - Show the list of all books that are checked out
+    - Show the list of all books that are overdue
+
+Search options
+    Authors (have multiple books, should be at least one available and one checked out)
+        - Garth Nix
+        - Rick Riordan
+        - James Patterson

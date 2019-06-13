@@ -1,0 +1,226 @@
+[
+    {
+      "book_id": "",
+      "title": "Hamster Princess: Harriet the Invincible",
+      "author": "Ursula Vernon",
+      "category": "Children's Books",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Littlest Christmas Tree",
+      "author": "R. A. Herman",
+      "category": "Children's Books",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "Mouse Paint",
+      "author": "Ellen Stoll Walsh",
+      "category": "Children's Books",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "The Amazing Spider-Man & Amazing Fantasy No.15",
+      "author": "STAN LEE & STEVE DITKO",
+      "category": "Comics & Graphic Novels",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Complete Far Side",
+      "author": "Gary Larson",
+      "category": "Comics & Graphic Novels",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "Exploring Calvin and Hobbes: An Exhibition Catalogue",
+      "author": "Bill Watterson",
+      "category": "Comics & Graphic Novels",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "After Nothing Comes",
+      "author": "Aidan Koch",
+      "category": "Comics & Graphic Novels",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Stars of Fortune: Book One of the Guardians Trilogy",
+      "author": "Nora Roberts",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Hobbit",
+      "author": "J. R. R. Tolkien",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Seveneves: A Novel",
+      "author": "Neal Stephenson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Abhorsen",
+      "author": "Garth Nix",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Harry Potter and the Sorcerer's Stone",
+      "author": "J.K. Rowling",
+      "category": "Science Fiction & Fantasy",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "Six of Crows",
+      "author": "Leigh Bardugo",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Lightning Thief",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Lightning Thief",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "The Lightning Thief",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Maximum Ride",
+      "author": "James Patterson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Maximum Ride",
+      "author": "James Patterson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Sabriel",
+      "author": "Garth Nix",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Lirael",
+      "author": "Garth Nix",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Dreamdark: Blackbringer",
+      "author": "Laini Taylor",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Dreamdark: Silksinger",
+      "author": "Laini Taylor",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Lost Hero",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Son of Neptune",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Mark of Athena",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The House of Hades",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "The Blood of Olympus",
+      "author": "Rick Riordan",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Fablehaven: Rise of the Evening Star",
+      "author": "Brandon Mull",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Fablehaven: Secrets of the Dragon Sanctuary",
+      "author": "Brandon Mull",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    },
+    {
+      "book_id": "",
+      "title": "Saving the World and Other Extreme Sports",
+      "author": "James Patterson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "School's Out Forever",
+      "author": "James Patterson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 0
+    },
+    {
+      "book_id": "",
+      "title": "The Final Warning",
+      "author": "James Patterson",
+      "category": "Science Fiction & Fantasy",
+      "availability": 1
+    }
+   ]

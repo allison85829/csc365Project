@@ -1,0 +1,37 @@
+Group members: Ally Quan, Sherry Lin, Abigail Ibarrola, Alexandria Quelle
+Group: section 3 group 6
+
+1. Signing in
+    (id) Type a student id to see a student's interface
+    (0) Type 0 to see the library manager's interface
+2. Student interface
+    Shows that student's current checked out books, reserved books, and overdue books.
+    Options:
+    (s) Search for a book
+        There are three search options:
+            (t) Search by title
+            (a) Search by author
+            (c) Search by category
+
+        It will display all the results
+        Then prompt the user to enter a book id
+        Then prompt the user to
+            (c) Check out a book
+            (r) Reserve a book
+    (t) Return a book
+    (n) Renew a book
+    (v) View checkout history
+    (q) Quit program
+    
+3. Library manager interface
+    Shows all currently overdue books
+    Prompts user for input:
+        (v) Show month-by-month summary of usage
+        (q) Quit program
+
+
+Notes
+    - Bad input crashes the program
+    - Did not handle concurrency issues
+    - .json file for data population doesn't run the update functions from our original .sql file,
+      so the fields showing books currently checked out in Student may not be correct

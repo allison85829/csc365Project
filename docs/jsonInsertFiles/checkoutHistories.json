@@ -1,0 +1,155 @@
+[
+    {
+      "entry_id": "",
+      "book_id": 1,
+      "student_id": 4,
+      "checkout_date": "2019-01-10",
+      "due_date": "2019-01-24",
+      "return_date": "2019-01-20",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 2,
+      "student_id": 2,
+      "checkout_date": "2019-01-10",
+      "due_date": "2019-01-24",
+      "return_date": "2019-01-20",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 16,
+      "student_id": 14,
+      "checkout_date": "2019-02-13",
+      "due_date": "2019-02-27",
+      "return_date": "2019-01-26",
+      "times_renewed": 1
+    },
+    {
+      "entry_id": "",
+      "book_id": 9,
+      "student_id": 10,
+      "checkout_date": "2019-03-21",
+      "due_date": "2019-03-28",
+      "return_date": "2019-03-24",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 13,
+      "student_id": 10,
+      "checkout_date": "2019-03-21",
+      "due_date": "2019-03-28",
+      "return_date": "2019-03-24",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 1,
+      "student_id": 9,
+      "checkout_date": "2019-03-29",
+      "due_date": "2019-04-13",
+      "return_date": "2019-04-13",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 5,
+      "student_id": 7,
+      "checkout_date": "2019-04-01",
+      "due_date": "2019-04-08",
+      "return_date": "2019-04-07",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 5,
+      "student_id": 8,
+      "checkout_date": "2019-04-10",
+      "due_date": "2019-04-17",
+      "return_date": "2019-04-18",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 9,
+      "student_id": 4,
+      "checkout_date": "2019-05-10",
+      "due_date": "2019-05-24",
+      "return_date": "2019-05-20",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 5,
+      "student_id": 4,
+      "checkout_date": "2019-05-20",
+      "due_date": "2019-06-04",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 15,
+      "student_id": 10,
+      "checkout_date": "2019-05-25",
+      "due_date": "2019-06-01",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 30,
+      "student_id": 10,
+      "checkout_date": "2019-05-25",
+      "due_date": "2019-06-01",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 31,
+      "student_id": 10,
+      "checkout_date": "2019-05-25",
+      "due_date": "2019-06-01",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 3,
+      "student_id": 4,
+      "checkout_date": "2019-06-01",
+      "due_date": "2019-06-15",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 6,
+      "student_id": 4,
+      "checkout_date": "2019-06-01",
+      "due_date": "2019-06-15",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 12,
+      "student_id": 4,
+      "checkout_date": "2019-06-01",
+      "due_date": "2019-06-15",
+      "return_date": "",
+      "times_renewed": 0
+    },
+    {
+      "entry_id": "",
+      "book_id": 2,
+      "student_id": 14,
+      "checkout_date": "2019-06-05",
+      "due_date": "2019-06-19",
+      "return_date": "",
+      "times_renewed": 0
+    }
+   ]
