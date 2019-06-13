@@ -46,7 +46,7 @@ public class TestDriver {
 		// TODO Auto-generated method stub
 		cur_student_id = 1;	
 		try {
-			dm = DaoManager.getInstance().setProperties("/Users/allyquan/cs/CSC365/properties.xml");
+			dm = DaoManager.getInstance().setProperties("properties.xml");
 			conn = DaoManager.getConnection();
 			bookDao = dm.getBookDao();
 			studentDao = dm.getStudentDao();
@@ -173,11 +173,39 @@ public class TestDriver {
 	}
 
 	public static void searchForBook(Scanner sc){
-		// Put code in here
+		System.out.println("Search book by title (t), author (a), or category (c)");
+		sc.nextLine();
+		String option = sc.nextLine();
+
+		if (option.equals("t")) {
+
+			System.out.println("Enter book title");
+			String title = sc.nextLine();
+
+			printOutput(getBookByTitle(title));
+		}
+		else if (option.equals("a")) {
+
+			System.out.println("Enter author name");
+			String author = sc.nextLine();
+
+			printOutput(getBookByAuthor(author));
+		}
+		else if (option.equals("c")) {
+
+			System.out.println("Enter category");
+			String category = sc.nextLine();
+
+			printOutput(getBookByCategory(category));
+		}
+		else {
+			System.exit(0);
+		}
+
+
 		int book_id;
 		Book book = null;
 
-		sc.nextLine();
 		System.out.println("Enter option (c for checkout or r for reserve): ");
 		String opt = sc.nextLine();
 		System.out.println("Enter the book id: ");
@@ -191,8 +219,13 @@ public class TestDriver {
 			book.setAvailability(false);
 			bookDao.update(book);
 
+<<<<<<< HEAD
 //			book = bookDao.getById(book_id);			
 			createCheckoutHisotry(book, cur_student_id);
+=======
+			book = bookDao.getById(book_id);
+			createCheckoutHisotry(book_id, cur_student_id);
+>>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
 
 			// closing the connection
 			try {
@@ -202,6 +235,7 @@ public class TestDriver {
 				e.printStackTrace();
 			}
 		} else if (opt.equals("r")) {
+<<<<<<< HEAD
 			// insert into reservation table 
 			if (studentHasReservation(cur_student_id)) {
 				System.out.println("You has reached the reservation limit \n"
@@ -210,7 +244,15 @@ public class TestDriver {
 				// check for max number of book checkout 
 				reserveBook(cur_student, book);
 			}
+=======
+			// insert into reservation table
+
+>>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
 		}
+
+		
+
+
 	}
 
 	public static void returnBook(Scanner in){
@@ -493,9 +535,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE title = ?");
+					"SELECT * FROM Books WHERE title LIKE ?");
 
-			preparedStatement.setString(1, title);
+			preparedStatement.setString(1, "%"+title+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -512,9 +554,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE author = ?");
+					"SELECT * FROM Books WHERE author LIKE ?");
 
-			preparedStatement.setString(1, author);
+			preparedStatement.setString(1, "%"+author+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -531,9 +573,9 @@ public class TestDriver {
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT * FROM Books WHERE category = ?");
+					"SELECT * FROM Books WHERE category LIKE ?");
 
-			preparedStatement.setString(1, category);
+			preparedStatement.setString(1, "%"+category+"%");
 			resultSet = preparedStatement.executeQuery();
 
 		}
