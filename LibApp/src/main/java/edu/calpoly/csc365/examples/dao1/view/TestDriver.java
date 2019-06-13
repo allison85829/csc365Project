@@ -218,24 +218,9 @@ public class TestDriver {
 			// update availability
 			book.setAvailability(false);
 			bookDao.update(book);
-
-<<<<<<< HEAD
-//			book = bookDao.getById(book_id);			
+			
 			createCheckoutHisotry(book, cur_student_id);
-=======
-			book = bookDao.getById(book_id);
-			createCheckoutHisotry(book_id, cur_student_id);
->>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
-
-			// closing the connection
-			try {
-				dm.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else if (opt.equals("r")) {
-<<<<<<< HEAD
 			// insert into reservation table 
 			if (studentHasReservation(cur_student_id)) {
 				System.out.println("You has reached the reservation limit \n"
@@ -244,19 +229,48 @@ public class TestDriver {
 				// check for max number of book checkout 
 				reserveBook(cur_student, book);
 			}
-=======
-			// insert into reservation table
-
->>>>>>> 57de660bb7eaf79992350c65ffa331703a91210b
 		}
-
-		
-
-
 	}
 
 	public static void returnBook(Scanner in){
-		// Put code in here
+		// Put code in here 
+		int book_id;
+		System.out.println("Enter book id for return: ");
+		book_id = in.nextInt();
+		in.nextLine();
+		Set<Reservation> reservations = bookHasReservation(book_id);
+		boolean reserved = (reservations.size() == 0) ? false : true;
+		String cur_date;
+		
+		CheckoutHistory return_hist = getCheckoutHistReturn(cur_student_id, book_id);
+		
+		cur_date = simpleDateFormat.format(new Date());
+		return_hist.setReturnDate(cur_date); // set the return date 
+		checkoutDao.update(return_hist);
+		
+		// if someone reserved the book, automatically checkout for that person 
+		if (reserved) {
+			Reservation next_resv = (Reservation)reservations.toArray()[0];
+			Student resv_student = studentDao.getById(next_resv.getStudentId());
+			Level student_level = levelDao.getById(resv_student.getGradLevel());
+			String due_date = calculateDueDate(student_level);
+			// checkout the book for the next reservation
+			CheckoutHistory new_checkout_hist = new CheckoutHistory(null, book_id,cur_student_id, 0, 
+					cur_date, null,  due_date);
+			checkoutDao.insert(new_checkout_hist);
+	
+			// remove the reservation 
+			reservationDao.delete(next_resv);
+			System.out.println("Return successfully");
+		} else {
+			// update book availability
+			Book book = bookDao.getById(book_id);
+			book.setAvailability(true);
+			bookDao.update(book);
+			
+			System.out.println("Return successfully");
+		}
+		
 	}
 
 	public static void renewBook(Scanner in){
@@ -278,24 +292,17 @@ public class TestDriver {
 		// get restriction on the student
 		Level cur_student_level = levelDao.getById(cur_student.getGradLevel());
 
-		// setting up the date format
-		Calendar c = Calendar.getInstance();
-		Date cur_date = new Date();
-		String cur_date_str = simpleDateFormat.format(cur_date);
-
-		//Setting the date to the given date
-		c.setTime(cur_date);
-		// add checkout duration to get the due date
-		c.add(Calendar.DAY_OF_MONTH, cur_student_level.getTimeLimit());
-		String due_date = simpleDateFormat.format(c.getTime());
-
+		String cur_date_str = simpleDateFormat.format(new Date());
+		String due_date = calculateDueDate(cur_student_level);
 		// check for book limit 
 		CheckoutHistory checkout_hist = null;
 		if (cur_student.getBooksCheckedOut() >= cur_student_level.getBookLimit()) {
 			System.out.println("WARNING !!! You have reached the maximum number of books to check out");
 		} else {
 			// check for reservation on that book 
-			if (bookHasReservation(book.getBookId())) {
+			Set<Reservation> reservations = bookHasReservation(book.getBookId());
+			boolean reserved = (reservations.size() == 0) ? false : true;
+			if (reserved) {
 				System.out.println("The book has been reserved");
 			} else {
 				checkout_hist = new CheckoutHistory(
@@ -307,6 +314,20 @@ public class TestDriver {
 		}
 	}
 	
+	public static String calculateDueDate(Level cur_student_level) {
+		String due_date;
+				// setting up the date format
+		Calendar c = Calendar.getInstance();
+		Date cur_date = new Date();
+		
+		//Setting the date to the given date
+		c.setTime(cur_date);
+		// add checkout duration to get the due date
+		c.add(Calendar.DAY_OF_MONTH, cur_student_level.getTimeLimit());
+		due_date = simpleDateFormat.format(c.getTime());
+		
+		return due_date;
+	}
 
 	public static ResultSet getCheckoutBooks(Dao<CheckoutHistory> historyDao) {
 		ResultSet resultSet = null;
@@ -342,7 +363,7 @@ public class TestDriver {
 	}  
 	
 	// check if a the book has some one reserve on it 
-	public static Boolean bookHasReservation(Integer book_id) {
+	public static Set<Reservation> bookHasReservation(Integer book_id) {
 		Set<Reservation> reservations = null;
 		Boolean hasRsrv;
 		try {
@@ -369,7 +390,7 @@ public class TestDriver {
 		
 		// if the set is not empty 
 		hasRsrv = (reservations.size() == 0) ?  false : true;		
-		return hasRsrv;
+		return reservations;
 	}
 
 	public static void printOutput(ResultSet rs) {
@@ -638,6 +659,54 @@ public class TestDriver {
 					+ "Cannot reserve !!!");
 		}
 	}
+	
+	public static CheckoutHistory getCheckoutHistReturn(Integer student_id, Integer book_id) {
+		Set<CheckoutHistory> checkout_histories = null;
+		Boolean hasRsrv;
+		CheckoutHistory checkout_hist = null;
+		try {
+			preparedStatement = conn.prepareStatement("SELECT * FROM CheckoutHistories\n" + 
+					"WHERE student_id=? AND book_id=? AND return_date IS NULL ORDER BY entry_id ASC LIMIT 1;");
+			preparedStatement.setInt(1, student_id);
+			preparedStatement.setInt(2, book_id);
+			resultSet = preparedStatement.executeQuery();
+			checkout_histories = unpackCheckoutHistory(resultSet);
+			checkout_hist = (CheckoutHistory)checkout_histories.toArray()[0];
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+				resultSet.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+			
+		return checkout_hist;
+	}
+	
+	private static Set<CheckoutHistory> unpackCheckoutHistory(ResultSet rs) throws SQLException {
+		Set<CheckoutHistory> reservations = new HashSet<CheckoutHistory>();
+
+		while(rs.next()) {
+			CheckoutHistory reservation = new CheckoutHistory(
+					rs.getInt("entry_id"),
+					rs.getInt("book_id"),
+					rs.getInt("student_id"),
+					rs.getInt("times_renewed"),
+					rs.getString("checkout_date"),
+					rs.getString("return_date"),
+					rs.getString("due_date"));
+			reservations.add(reservation);
+		}
+		return reservations;
+	} 
 }
 
 
