@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import edu.calpoly.csc365.examples.dao1.dao.CheckoutHistoryDaoImpl;
 import edu.calpoly.csc365.examples.dao1.dao.Dao;
 import edu.calpoly.csc365.examples.dao1.dao.DaoManager;
+import edu.calpoly.csc365.examples.dao1.dao.ReservationDaoImpl;
 import edu.calpoly.csc365.examples.dao1.entity.Book;
 import edu.calpoly.csc365.examples.dao1.entity.Level;
 import edu.calpoly.csc365.examples.dao1.entity.Reservation;
@@ -42,9 +43,11 @@ public class TestDriver {
 	public static String pattern = "yyyy-MM-dd";
 	public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		cur_student_id = 1;	
+		cur_student_id = 1;
+
+
 		try {
 			dm = DaoManager.getInstance().setProperties("properties.xml");
 			conn = DaoManager.getConnection();
@@ -63,7 +66,7 @@ public class TestDriver {
 		userInputDriver();
 	}
 
-	public static void userInputDriver(){
+	public static void userInputDriver() throws SQLException{
 		String input = "";
 
 		displayWelcomeMessage();
@@ -72,9 +75,11 @@ public class TestDriver {
 
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
-			displayManagerMenu();
+			displayAllCheckedOutBooks();
+			displayAllOverdueBooks();
 
 			while (!input.equals("q")) {
+				displayManagerMenu();
 				displayPrompt();
 				input = in.next();
 				executeManagerCommand(input, in);
@@ -85,9 +90,10 @@ public class TestDriver {
 		else {
 			displayCheckedOutBooks();
 			displayReservedBooks();
-			displayStudentMenu();
+			displayOverdueBooks();
 
 			while (!input.equals("q")) {
+				displayStudentMenu();
 				displayPrompt();
 				input = in.next();
 				executeStudentCommand(input, in);
@@ -127,15 +133,75 @@ public class TestDriver {
 		System.out.println("    q: Quit Library Checkout System");
 	}
 
-	public static void displayCheckedOutBooks(){
-		// Put code in here
+	public static void displayAllCheckedOutBooks() throws  SQLException{
+
+		ResultSet rs = getAllCheckedOutBooks(cur_student_id);
+
+		System.out.println("\nAll Currently Checked Out Books:");
+
+		if (rs.next() == false) {
+			System.out.println("There no books currently checked out!");
+		}
+		else {
+			rs.previous();
+			printOutput(rs);
+		}
 	}
 
-	public static void displayReservedBooks(){
-		// Put code in here
+	public static void displayCheckedOutBooks() throws  SQLException{
+
+		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
+
+		System.out.println("\nCurrently Checked Out Books:");
+
+		if (rs.next() == false) {
+			System.out.println("You have no books currently checked out!");
+		}
+		else {
+			rs.previous();
+			printOutput(rs);
+		}
 	}
 
-	public static void executeStudentCommand(String input, Scanner in) {
+	public static void displayReservedBooks() throws  SQLException {
+
+		ResultSet rs = getReservedBooksByStudentId(cur_student_id);
+
+		System.out.println("\nCurrently Reserved Books:");
+
+		if (rs.next() == false) {
+			System.out.println("You have no books currently reserved!");
+		} else {
+			rs.previous();
+			printOutput(rs);
+		}
+	}
+
+	public static void displayOverdueBooks() throws  SQLException {
+		ResultSet rs = getOverdueBooks(cur_student_id);
+
+		if (rs.next() != false) {
+			System.out.println("\nWarning! The following books are overdue:");
+			rs.previous();
+			printOutput(rs);
+		}
+	}
+
+	public static void displayAllOverdueBooks() throws  SQLException {
+		ResultSet rs = getAllOverdueBooks();
+
+		if (rs.next() != false) {
+			System.out.println("\nThe following students currently have overdue books:");
+			rs.previous();
+			printOutput(rs);
+		}
+
+		else {
+			System.out.println("\nThere are currently no books overdue.");
+		}
+	}
+
+	public static void executeStudentCommand(String input, Scanner in) throws SQLException{
 		switch(input)
 		{
 			case "s":
@@ -151,6 +217,7 @@ public class TestDriver {
 				viewHistory(in);
 				break;
 			case "q":
+				dm.close();
 				break;
 			default:
 				System.out.println("Invalid input. Please try again.");
@@ -158,7 +225,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void executeManagerCommand(String input, Scanner in) {
+	public static void executeManagerCommand(String input, Scanner in) throws SQLException {
 		switch(input)
 		{
 			case "v":
@@ -172,7 +239,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void searchForBook(Scanner sc){
+	public static void searchForBook(Scanner sc) throws SQLException {
 		System.out.println("Search book by title (t), author (a), or category (c)");
 		sc.nextLine();
 		String option = sc.nextLine();
@@ -218,7 +285,6 @@ public class TestDriver {
 			// update availability
 			book.setAvailability(false);
 			bookDao.update(book);
-			
 			createCheckoutHisotry(book, cur_student_id);
 		} else if (opt.equals("r")) {
 			// insert into reservation table 
@@ -274,18 +340,71 @@ public class TestDriver {
 	}
 
 	public static void renewBook(Scanner in){
-		// Put code in here
+		System.out.println("Enter book id");
+		int book_id = in.nextInt();
+		in.nextLine();
+
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"UPDATE CheckoutHistories\n" +
+							"SET due_date = DATE_ADD(due_date, INTERVAL \n" +
+							"(SELECT DISTINCT checkout_duration FROM Levels \n" +
+							"JOIN Students ON grad_level = level_id\n" +
+							"WHERE level_id = ?)\n" +
+							" DAY),\n" +
+							"    times_renewed = times_renewed + 1\n" +
+							"WHERE book_id = ?\n" +
+							"    AND return_date IS NULL;");
+
+			Student student = studentDao.getById(cur_student_id);
+			preparedStatement.setInt(1, student.getGradLevel());
+			preparedStatement.setInt(2, book_id);
+
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	public static void viewHistory(Scanner in){
-		// Put code in here
+
+
+	public static void viewHistory(Scanner in) throws SQLException{
+		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
+		if (rs.next() == false) {
+			System.out.println("no previous checkout history");
+		}
+		else {
+			printOutput(rs);
+		}
+
 	}
 
-	public static void viewMonthlyOverview(Scanner in){
-		// Put code in here
+	public static void viewMonthlyOverview(Scanner in) throws SQLException {
+		ResultSet rs = getCheckoutSummary();
+		String s;
+
+		System.out.printf("%-50s | Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec | Year\n", "Title");
+		while(rs.next()) {
+			s = rs.getString(1);
+			if (s.length() > 50) {
+				s = s.substring(0, 50);
+			}
+
+			System.out.printf("%-50s | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %4d\n",
+					s, rs.getInt(2), rs.getInt(3),
+					rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7),
+					rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11),
+					rs.getInt(12), rs.getInt(13),rs.getInt(14));
+		}
 	}
 
-	public static void createCheckoutHisotry(Book book, int student_id) {
+	public static void createCheckoutHisotry(Book book, int student_id) throws SQLException {
 		// ------------ create checkout history -----------------
 		// get the current student grad level
 		Student cur_student = studentDao.getById(student_id);
@@ -305,11 +424,14 @@ public class TestDriver {
 			if (reserved) {
 				System.out.println("The book has been reserved");
 			} else {
+				book.setAvailability(false);
+				bookDao.update(book);
 				checkout_hist = new CheckoutHistory(
 						null, book.getBookId(), cur_student_id, 0, cur_date_str, null, due_date);
 				checkoutDao.insert(checkout_hist);
 				System.out.println("Check out successfully \n"
 						+ "Your book is due on " + due_date);
+				displayCheckedOutBooks();
 			}
 		}
 	}
@@ -429,15 +551,39 @@ public class TestDriver {
 		return resultSet;
 	}
 
-	public static ResultSet getOverdueBooks() {
+	public static ResultSet getOverdueBooks(Integer student_id) {
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
 
 		try {
 			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
-					"SELECT title FROM CheckoutHistories\n" +
+					"SELECT Books.book_id, title FROM CheckoutHistories\n" +
 							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
-							"WHERE return_date IS NULL");
+							"JOIN Students ON CheckoutHistories.student_id = Students.student_id\n" +
+							"WHERE return_date IS NULL AND CURDATE() > due_date AND Students.student_id = ?\n" +
+							"ORDER BY title, Books.book_id");
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getAllOverdueBooks() {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Students.student_id, title FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"JOIN Students ON CheckoutHistories.student_id = Students.student_id\n" +
+							"WHERE return_date IS NULL AND CURDATE() > due_date\n" +
+							"ORDER BY Students.student_id");
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -526,6 +672,29 @@ public class TestDriver {
 		return resultSet;
 	}
 
+	public static ResultSet getReservedBooksByStudentId(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = ReservationDaoImpl.conn.prepareStatement(
+					"SELECT Books.book_id, title, author, date\n" +
+							"FROM Reservations\n" +
+							"JOIN Books ON Reservations.book_id = Books.book_id\n" +
+							"WHERE student_id = ?\n" +
+							"ORDER BY date");
+
+			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
 	public static ResultSet getPreviousCheckoutHistoryByStudentId(Integer student_id) {
 		ResultSet resultSet = null;
 		PreparedStatement preparedStatement = null;
@@ -540,6 +709,28 @@ public class TestDriver {
 							"ORDER BY due_date");
 
 			preparedStatement.setInt(1, student_id);
+			resultSet = preparedStatement.executeQuery();
+
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultSet;
+	}
+
+	public static ResultSet getAllCheckedOutBooks(Integer student_id) {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			preparedStatement = CheckoutHistoryDaoImpl.conn.prepareStatement(
+					"SELECT Students.student_id, Books.book_id, title, author, checkout_date, due_date\n" +
+							"FROM CheckoutHistories\n" +
+							"JOIN Books ON CheckoutHistories.book_id = Books.book_id\n" +
+							"JOIN Students ON CheckoutHistories.student_id = Students.student_id\n" +
+							"ORDER BY Students.student_id");
+
 			resultSet = preparedStatement.executeQuery();
 
 		}
@@ -637,7 +828,7 @@ public class TestDriver {
 		return hasRsrv;
 	}
 
-	public static void reserveBook(Student student, Book book) {
+	public static void reserveBook(Student student, Book book) throws SQLException {
 		int book_limit = levelDao.getById(student.getGradLevel()).getBookLimit();
 		String checkout;
 		Scanner sc = new Scanner(System.in);
