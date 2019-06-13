@@ -302,7 +302,7 @@ public class TestDriver {
 		}
 	}
 
-	public static void returnBook(Scanner in){
+	public static void returnBook(Scanner in) throws SQLException {
 		// Put code in here 
 		int book_id;
 		System.out.println("Enter book id for return: ");
@@ -331,16 +331,17 @@ public class TestDriver {
 	
 			// remove the reservation 
 			reservationDao.delete(next_resv);
-			System.out.println("Return successfully");
+			System.out.println("\nBook was returned successfully!");
 		} else {
 			// update book availability
 			Book book = bookDao.getById(book_id);
 			book.setAvailability(true);
 			bookDao.update(book);
 			
-			System.out.println("Return successfully");
+			System.out.println("\nBook was returned successfully!");
 		}
-		
+
+		displayCheckedOutBooks();
 	}
 
 	public static void renewBook(Scanner in){
