@@ -127,7 +127,8 @@ public class StudentDaoImpl implements Dao<Student> {
 		while(rs.next()) {
 			Student student = new Student(
 					rs.getInt("student_id"),
-					rs.getInt("grad_level"));
+					rs.getInt("grad_level"), 
+					rs.getInt("books_checked_out"));
 			students.add(student);
 		}
 		return students;

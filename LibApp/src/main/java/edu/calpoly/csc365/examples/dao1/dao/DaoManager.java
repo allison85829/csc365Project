@@ -15,10 +15,10 @@ import java.util.Properties;
 
 public class DaoManager {
 
-  private String driver = null;
-  private String url = null;
-  private String user = null;
-  private String pass = null;
+  private static String driver = null;
+  private static String url = null;
+  private static String user = null;
+  private static String pass = null;
 
   private static class DAOManagerHolder {
     public static final ThreadLocal<DaoManager> instance;
@@ -50,7 +50,7 @@ public class DaoManager {
   }
 
   //Private
-  private Connection conn;
+  private static Connection conn;
 
   private DaoManager() throws Exception {
     try
@@ -64,15 +64,16 @@ public class DaoManager {
     return DAOManagerHolder.instance.get();
   }
 
-  public Connection getConnection() {
-    return this.conn;
+  public static Connection getConnection() {
+//    return this.conn;
+	  return conn;
   }
 
-  public void open() throws SQLException {
+  public static void open() throws SQLException {
     try
     {
-      if(this.conn == null || this.conn.isClosed())
-        this.conn = ConnectionFactory.getConnection(this.driver, this.url, this.user, this.pass);
+      if(conn == null || conn.isClosed())
+        conn = ConnectionFactory.getConnection(driver, url, user, pass);
     }
     catch(SQLException e) { throw e; }
   }
