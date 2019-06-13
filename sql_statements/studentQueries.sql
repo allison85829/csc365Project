@@ -1,6 +1,6 @@
 -- Student View Queries
 
--- Get current checkout history of student given the ID
+-- Get currently checked out books of the student using given id
 SELECT Books.book_id, title, author, checkout_date, due_date
 FROM CheckoutHistories
 JOIN Books ON CheckoutHistories.book_id = Books.book_id
@@ -12,7 +12,7 @@ ORDER BY due_date;
 SELECT Books.book_id, title, author, checkout_date, due_date, return_date
 FROM CheckoutHistories
 JOIN Books ON CheckoutHistories.book_id = Books.book_id
-WHERE student_id = given_id
+WHERE student_id = 4
     AND return_date IS NOT NULL
 ORDER BY due_date;
 

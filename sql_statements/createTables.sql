@@ -34,7 +34,7 @@ CREATE TABLE CheckoutHistories (
 	checkout_date DATE NOT NULL,
 	due_date DATE,
 	return_date DATE,
-	times_renewed  INT(10) NOT NULL,
+	times_renewed  INT(10) NOT NULL DEFAULT 0,
 
 	FOREIGN KEY (book_id) REFERENCES Books(book_id),
 	FOREIGN KEY (student_id) REFERENCES Students(student_id),
