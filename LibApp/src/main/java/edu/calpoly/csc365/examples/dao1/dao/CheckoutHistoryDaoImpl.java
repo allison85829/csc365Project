@@ -45,14 +45,14 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 	}
 
 	public Set<CheckoutHistory> getAll() {
-		Set<CheckoutHistory> reservations = null;
+		Set<CheckoutHistory> checkoutHistory = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 
 		try {
 			preparedStatement = this.conn.prepareStatement("SELECT * FROM CheckoutHistories");
 			resultSet = preparedStatement.executeQuery();
-			reservations = unpackResultSet(resultSet);
+			checkoutHistory = unpackResultSet(resultSet);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -68,7 +68,7 @@ public class CheckoutHistoryDaoImpl implements Dao<CheckoutHistory> {
 				e.printStackTrace();
 			}
 		}
-		return reservations;
+		return checkoutHistory;
 	}
 
 	public Boolean insert(CheckoutHistory obj) {
