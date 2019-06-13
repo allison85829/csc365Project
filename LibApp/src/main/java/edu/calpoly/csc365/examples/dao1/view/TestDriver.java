@@ -66,9 +66,8 @@ public class TestDriver {
 
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
-			displayManagerMenu();
-
 			while (!input.equals("q")) {
+				displayManagerMenu();
 				displayPrompt();
 				input = in.next();
 				executeManagerCommand(input, in);
@@ -79,9 +78,9 @@ public class TestDriver {
 		else {
 			displayCheckedOutBooks();
 			displayReservedBooks();
-			displayStudentMenu();
 
 			while (!input.equals("q")) {
+				displayStudentMenu();
 				displayPrompt();
 				input = in.next();
 				executeStudentCommand(input, in);
