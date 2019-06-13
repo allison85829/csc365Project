@@ -75,6 +75,7 @@ public class TestDriver {
 		// If id <= 0, this is manager
 		if (cur_student_id <= 0) {
 			displayOverdueBooks();
+			displayCheckedOutBooks();
 			displayManagerMenu();
 
 
@@ -136,6 +137,7 @@ public class TestDriver {
 
 		ResultSet rs = getCurrentCheckoutHistoryByStudentId(cur_student_id);
 
+		System.out.println();
 		System.out.println("Currently checkout books");
 		System.out.println();
 
