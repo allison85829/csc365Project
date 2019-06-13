@@ -440,14 +440,28 @@ public class TestDriver {
 
 
 	public static void viewHistory(Scanner in) throws SQLException{
+		String s;
 		ResultSet rs = getPreviousCheckoutHistoryByStudentId(cur_student_id);
+
 		if (rs.next() == false) {
 			System.out.println("\nYou have no previous checkout history!");
 		}
 		else {
 			System.out.println("\nCheckout History:");
 			rs.previous();
-			printOutput(rs);
+
+			System.out.printf("Book | %-50s | %-30s | Checkout Date | Due Date | Return Date\n", "Title", "Author");
+
+			while(rs.next()) {
+				s = rs.getString(2);
+				if (s.length() > 50) {
+					s = s.substring(0, 50);
+				}
+
+				System.out.printf("%-4d | %-50s | %-30s | %-13s | %-8s | %-11s\n", rs.getInt(1), s,
+						rs.getString(3), rs.getString(4), rs.getString(5),
+						rs.getString(6));
+			}
 		}
 
 	}
