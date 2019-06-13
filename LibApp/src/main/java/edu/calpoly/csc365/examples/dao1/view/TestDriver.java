@@ -833,7 +833,7 @@ public class TestDriver {
 		String checkout;
 		Scanner sc = new Scanner(System.in);
 		
-		if (student.getBooksCheckedOut() == book_limit ) {
+		if (student.getBooksCheckedOut() != book_limit ) {
 			String d = simpleDateFormat.format(new Date());
 			Reservation reservation = new Reservation(null, book.getBookId(), cur_student_id, d);
 			reservationDao.insert(reservation);
